@@ -1,0 +1,5 @@
+{"rule":"DE_CASE","sentence":"^\\Q\\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q Diese Praktik ist somit Teil des Innovationsmanagements und soll Potenzial Andere in den eigenen Innovationsprozessen aktivierbar machen.\\E$"}
+{"rule":"GERMAN_SPELLER_RULE","sentence":"^\\QZum einen wird in der Entwicklung das Risiko und die Kosten aufgeteilt, auf der anderen Seite kann eine Spezialisierungsvorteil genutzt werden, indem eine kompetenz-entsprechende Aufgabenverteilung stattfindet.\\E$"}
+{"rule":"DE_CASE","sentence":"^\\Q\\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q Diese Praktik ist somit Teil des Innovationsmanagements und soll das Potenzial Anderer in den eigenen Innovationsprozessen aktivierbar machen.\\E$"}
+{"rule":"GERMAN_SPELLER_RULE","sentence":"^\\QFür diese Herausforderung gibt es Marktforschungsmethoden, wie bspw. Interviews mit Konsumenten, was jedoch erst nach der Marktreife oder mit einem Proof-of-concept in Fokusgruppen möglich ist.\\E$"}
+{"rule":"GERMAN_SPELLER_RULE","sentence":"^\\QEhemals Swagger wurde, wie für diesen Bereich üblich, in ein Konsortium, heute Teil der Linux Foundation, von SMARTBEAR ausgegründet.\\E$"}
