@@ -1,0 +1,1 @@
+void getCities5(City *cities);
