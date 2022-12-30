@@ -1,4 +1,4 @@
-#include "../../ant.h"
+#include "../../plain_c/ant.h"
 #include "cities5.h"
 
 void getCities5(City *cities) {

@@ -1,10 +1,10 @@
 #include "ant.h"
-#include "cities/5/cities5.h"
-#include "cities/10/cities10.h"
+#include "../cities/5/cities5.h"
+#include "../cities/10/cities10.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "cities/5/cities5.h"
+#include "../cities/5/cities5.h"
 
 #define MAX_CITIES 100              // Maximum number of cities
 #define MAX_ANTS 50                  // Maximum number of ants
