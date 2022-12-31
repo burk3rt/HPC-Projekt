@@ -84,20 +84,20 @@ int main() {
         // Have each ant explore the solution space
         for (i = 0; i < n_ants; i++) {
             if (ants[i].path_index < n_cities) { // If the ant has not visited all the cities
+                //Calculate denominator to distribute possibility between 0 and 1
+                double denominator = 0.0;
+                for (int k = 0; k < n_cities; k++) {
+                    if (k != ants[i].cur_city &&
+                        !ants[i].visited[k]) { // Cannot move to current city or a visited city
+                        denominator += pow(phero[ants[i].cur_city][k], ALPHA) *
+                                       pow(1.0 / distance(cities[ants[i].cur_city], cities[k]), BETA);
+                    }
+                }
                 // Calculate the probabilities of moving to each city
                 for (j = 0; j < n_cities; j++) {
-                    if (j != ants[i].cur_city &&
-                        !ants[i].visited[j]) { // Cannot move to current city OR already visited city
-                        double denom = 0.0;
-                        for (int k = 0; k < n_cities; k++) {
-                            if (k != ants[i].cur_city &&
-                                !ants[i].visited[k]) { // Cannot move to current city or a visited city
-                                denom += pow(phero[ants[i].cur_city][k], ALPHA) *
-                                         pow(1.0 / distance(cities[ants[i].cur_city], cities[k]), BETA);
-                            }
-                        }
+                    if (j != ants[i].cur_city && !ants[i].visited[j]) { // Cannot move to current city OR already visited city
                         probs[j] = pow(phero[ants[i].cur_city][j], ALPHA) *
-                                   pow(1.0 / distance(cities[ants[i].cur_city], cities[j]), BETA) / denom;
+                                   pow(1.0 / distance(cities[ants[i].cur_city], cities[j]), BETA) / denominator;
                     } else {
                         probs[j] = 0.0; // Cannot move to the current city
                     }
