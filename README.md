@@ -9,8 +9,20 @@
 
 ## Traveling Salesman Problem Lösung unter Verwendung eines Ameisen-Algorithmus
 
-<mark>@Luca hast du noch den Aufschrieb der Idee :D</mark> 
+- CPU (OpenMP, Luca) vs GPU (OpenCL, Benny) 
+  - Benchmark mit Parameter variation (Anzahl Ameisen, Anzahl Städte) 
+  - Erklärung wieso was schneller ist
+  - (Feintuning an eine Platform bspw. soviel Ants, dass Cache voll)
 
+### Todo
+
+- [ ] Einlesen von Städten auf Basis von csv input (mit Python generieren?)
+- [ ] Plain_c Lösung gegenprüfen mit OR Ant-Algorithmus
+  - Abweichung von struct zu Matritzen für Speicheroptimierung
+  - Struct minimieren (tour length nacher errechnen, cur city aus path )
+- [ ] Optimierung OpenCL
+- [ ] Optimierung OpenMP
+- [ ] Benchmark "Framework"
 ---
 
 ## Vorgaben
