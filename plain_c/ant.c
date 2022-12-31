@@ -12,8 +12,6 @@
 #define BETA 5.0                     // Distance influence
 #define RHO 0.5                      // Pheromone evaporation coefficient
 #define QVAL 100                     // Pheromone deposit coefficient
-#define MAX_TOURS 20                 // Maximum number of tours
-#define MAX_TIME 10000               // Maximum time to run algorithm
 #define INIT_PHER (1.0 / MAX_CITIES) // Initial pheromone level
 
 // Structure to represent an ant
@@ -43,8 +41,6 @@ int main() {
     double probs[MAX_CITIES];             // Probabilities of moving to a city
     int n_cities;                         // Number of cities
     int n_ants;                           // Number of ants
-    int max_time;                         // Maximum time to run the algorithm
-    int max_tours;                        // Maximum number of tours
     int i, j;                             // Loop indices
 
     // Read in the number of cities and ants
@@ -78,9 +74,8 @@ int main() {
     }
 
     // Run the ant algorithm
-    max_time = MAX_TIME;
-    max_tours = MAX_TOURS;
-    while (max_time-- > 0) {
+    int tour_steps = 0;
+    while (tour_steps < n_cities) {
         // Have each ant explore the solution space
         for (i = 0; i < n_ants; i++) {
             if (ants[i].path_index < n_cities) { // If the ant has not visited all the cities
@@ -133,11 +128,7 @@ int main() {
                 phero[i][j] *= (1.0 - RHO);
             }
         }
-        // Check for convergence
-        max_tours--;
-        if (max_tours == 0) {
-            break;
-        }
+        tour_steps += 1;
     }
     // Finished the ant algorithm
 
@@ -166,10 +157,5 @@ int main() {
         printf("%d ", ants[min_index].path[i]);
     }
     printf("\nTour length: %lf\n", ants[min_index].tour_length);
-//    printf("d 0->1 : %f\n", distance(cities[ants[min_index].path[0]], cities[ants[min_index].path[1]]));
-//    printf("d 1->2 : %f\n", distance(cities[ants[min_index].path[1]], cities[ants[min_index].path[2]]));
-//    printf("d 2->3 : %f\n", distance(cities[ants[min_index].path[2]], cities[ants[min_index].path[3]]));
-//    printf("d 3->4 : %f\n", distance(cities[ants[min_index].path[3]], cities[ants[min_index].path[4]]));
-//    printf("d 4->5 : %f\n", distance(cities[ants[min_index].path[4]], cities[ants[min_index].path[5]]));
     return 0;
 }
