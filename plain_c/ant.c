@@ -41,9 +41,9 @@ double distance(City city1, City city2)
 int main() {
     City cities[N_CITIES];              // Array of cities
     Ant ants[N_ANTS];                   // Array of ants
-    double phero[N_CITIES][N_CITIES]; // Pheromone levels on the edges
+    double phero[N_CITIES][N_CITIES];   // Pheromone levels on the edges
     double probs[N_CITIES];             // Probabilities of moving to a city     // Number of ants
-    int i, j;                             // Loop indices
+    int i, j;                           // Loop indices
 
     // Read in the number of cities and ants
     printf("number cities=%d, number ants=%d\n", N_CITIES, N_ANTS);
@@ -57,11 +57,12 @@ int main() {
         }
     }
 
-    // Initialize the ants
-    initializeAnts(ants);
+
 
     // Run the ant algorithm
     for (int generation = 0; generation < N_GENERATIONS; ++generation) {
+        // Initialize the ants
+        initializeAnts(ants);
 
         for (int tour_steps = 0; tour_steps < N_CITIES-1; ++tour_steps) {
             // Have each ant explore the solution space
@@ -124,8 +125,6 @@ int main() {
                 phero[i][j] *= (1.0 - RHO);
             }
         }
-
-        initializeAnts(ants);
     }
     // Finished the ant algorithm
 
