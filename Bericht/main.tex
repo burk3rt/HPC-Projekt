@@ -1,0 +1,82 @@
+% imports
+\documentclass[12pt]{scrreport} % use scrreport for reports
+\usepackage[utf8]{inputenc}
+\usepackage[onehalfspacing]{setspace}
+\usepackage{float}
+\usepackage{acronym}
+\usepackage[hidelinks, breaklinks=true]{hyperref}
+\usepackage[ngerman]{babel} % german language
+\usepackage{graphicx}
+\usepackage[style=ieee, maxcitenames=2, mincitenames=1]{biblatex}
+\addbibresource{sources.bib} 
+\graphicspath{{images/}} % path of images
+
+
+% code settings
+\usepackage{listings}
+\usepackage{color}
+
+\counterwithin{figure}{section} % figure count with sections
+\makeatletter % avoid overlapping
+     \renewcommand*\l@figure{\@dottedtocline{1}{1em}{3.2em}}
+\makeatother
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  numbers=left,
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+% own commands
+\newcommand{\quotes}[1]{,,#1''}
+\renewcommand*{\chapterheadstartvskip}{\vspace*{0.5cm}}
+\renewcommand*{\chapterheadendvskip}{\vspace{1cm}}
+
+% Document beginn
+\begin{document}
+
+\input{chapters/00-titlepage.tex}
+
+\pagenumbering{Roman} 
+
+\tableofcontents
+\listoffigures
+\addcontentsline{toc}{section}{Abbildungsverzeichniss}
+
+\chapter*{Abkürzungsverzeichnis}
+\input{chapters/001-Abkuerzungen.tex}
+\addcontentsline{toc}{section}{Abkürzungsverzeichnis}
+
+\chapter{Hauptteil}
+\pagenumbering{arabic} 
+\input{chapters/01-Einleitung.tex}
+
+\input{chapters/02-Hauptteil.tex}
+
+\input{chapters/03-Schluss.tex}
+
+\newpage
+\printbibliography
+\addcontentsline{toc}{section}{Literatur}
+\newpage
+
+\chapter{Anhang}
+\appendix
+\input{chapters/04-Anhang.tex}
+
+\end{document}
