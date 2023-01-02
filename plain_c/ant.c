@@ -23,8 +23,8 @@ typedef struct
     int next_city;        // Next city to visit
     int start_city;       // Start city
     int path_index;       // Index in the path array
-    int path[N_CITIES];     // Visited cities in order
-    int visited[N_CITIES]; // Array to keep track of visited cities
+    int path[N_CITIES+1];     // Visited cities in order
+    int visited[N_CITIES+1]; // Array to keep track of visited cities
     double tour_length;   // Length of current tour
 } Ant;
 
@@ -57,14 +57,12 @@ int main() {
         }
     }
 
-
-
     // Run the ant algorithm
     for (int generation = 0; generation < N_GENERATIONS; ++generation) {
         // Initialize the ants
         initializeAnts(ants);
 
-        for (int tour_steps = 0; tour_steps < N_CITIES-1; ++tour_steps) {
+        for (int tour_steps = 0; tour_steps < N_CITIES; ++tour_steps) {
             // Have each ant explore the solution space
             for (i = 0; i < N_ANTS; i++) {
                 if (ants[i].path_index < N_CITIES) { // If the ant has not visited all the cities
@@ -107,7 +105,7 @@ int main() {
         // Returning to the start city
         for (i = 0; i < N_ANTS; i++)
         {
-            ants[i].path[ants[i].path_index++] = ants[i].start_city;
+            ants[i].path[ants[i].path_index] = ants[i].start_city;
             ants[i].tour_length += distance(cities[ants[i].cur_city], cities[ants[i].start_city]);
         }
 
