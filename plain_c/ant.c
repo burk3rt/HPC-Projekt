@@ -1,13 +1,12 @@
 #include "ant.h"
 #include "../cities/5/cities5.h"
-#include "../cities/10/cities10.h"
+#include "../cities/csv-input.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-#include "../cities/5/cities5.h"
 
-#define N_CITIES 10                    //  number of cities
+#define N_CITIES 50                    //  number of cities
 #define N_ANTS 25                      //  number of ants
 #define N_GENERATIONS 10
 #define ALPHA 1.0                    // Pheromone influence
@@ -47,8 +46,18 @@ int main() {
 
     // Read in the number of cities and ants
     printf("number cities=%d, number ants=%d\n", N_CITIES, N_ANTS);
+    char city_amount[sizeof(N_CITIES)] = "";
+    sprintf(city_amount, "%d", N_CITIES);
+    char file_ending [] = ".csv";
+    char basepath[16 + sizeof(city_amount) + sizeof(file_ending)] = "../cities/data/";
+    strcat(basepath, city_amount);
+    strcat(basepath, file_ending);
+    //printf("%s", basepath);
 
-    getCities10(cities);
+    int data[N_CITIES][2];
+    readCsv(basepath, data,N_CITIES);
+
+    getCities5(cities);
 
     // Initialize the pheromone levels to the initial value
     for (i = 0; i < N_CITIES; i++) {
