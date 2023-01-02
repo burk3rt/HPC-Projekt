@@ -17,7 +17,7 @@
 ### Todo
 
 - [ ] Einlesen von Städten auf Basis von csv input (mit Python generieren?)
-- [ ] Plain_c Lösung gegenprüfen mit OR Ant-Algorithmus
+- [x] Plain_c Lösung gegenprüfen mit OR Ant-Algorithmus
   - Abweichung von struct zu Matritzen für Speicheroptimierung
   - Struct minimieren (tour length nacher errechnen, cur city aus path )
 - [ ] Optimierung OpenCL
