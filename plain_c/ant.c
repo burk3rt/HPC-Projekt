@@ -1,13 +1,12 @@
 #include "ant.h"
 #include "../cities/5/cities5.h"
-#include "../cities/10/cities10.h"
+#include "../cities/csv-input.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-#include "../cities/5/cities5.h"
 
-#define N_CITIES 10                    //  number of cities
+#define N_CITIES 400                    //  number of cities
 #define N_ANTS 25                      //  number of ants
 #define N_GENERATIONS 10
 #define ALPHA 1.0                    // Pheromone influence
@@ -16,6 +15,12 @@
 #define QVAL 100                     // Pheromone deposit coefficient
 #define INIT_PHER (1.0 / N_CITIES) // Initial pheromone level
 
+// Structure to represent a city
+typedef struct
+{
+    int x; // X coordinate
+    int y; // Y coordinate
+} City;
 // Structure to represent an ant
 typedef struct
 {
@@ -47,8 +52,16 @@ int main() {
 
     // Read in the number of cities and ants
     printf("number cities=%d, number ants=%d\n", N_CITIES, N_ANTS);
+    char city_amount[sizeof(N_CITIES)] = "";
+    sprintf(city_amount, "%d", N_CITIES);
+    char file_ending [] = ".csv";
+    char basepath[18 + sizeof(city_amount) + sizeof(file_ending)] = "../../cities/data/";
+    strcat(basepath, city_amount);
+    strcat(basepath, file_ending);
+    //printf("%s", basepath);
 
-    getCities10(cities);
+    int data[N_CITIES][2];
+    readCitiesFromCsv(basepath, cities);
 
     // Initialize the pheromone levels to the initial value
     for (i = 0; i < N_CITIES; i++) {
@@ -139,6 +152,13 @@ int main() {
             min_index = i;
         }
     }
+    // check if all cities were visited
+    int visited_cities = 0;
+    for (int k = 0; k < N_CITIES; ++k) {
+        if(ants[min_index].visited[k])
+            visited_cities++;
+    }
+    printf("%d Cities\n", visited_cities);
     // Print the shortest tour
     printf("Shortest tour: ");
     for (i = 0; i <= N_CITIES; i++)

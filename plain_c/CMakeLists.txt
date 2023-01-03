@@ -6,5 +6,5 @@ set(CMAKE_C_STANDARD 11)
 add_executable(HPC_Projekt
         ant.c
         ../cities/5/cities5.c
-        ../cities/10/cities10.c
-        )
+        ../cities/csv-input.c
+        ../cities/csv-input.h)
