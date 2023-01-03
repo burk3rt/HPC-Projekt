@@ -6,7 +6,7 @@
 #include <math.h>
 #include <string.h>
 
-#define N_CITIES 50                    //  number of cities
+#define N_CITIES 400                    //  number of cities
 #define N_ANTS 25                      //  number of ants
 #define N_GENERATIONS 10
 #define ALPHA 1.0                    // Pheromone influence
@@ -49,15 +49,15 @@ int main() {
     char city_amount[sizeof(N_CITIES)] = "";
     sprintf(city_amount, "%d", N_CITIES);
     char file_ending [] = ".csv";
-    char basepath[16 + sizeof(city_amount) + sizeof(file_ending)] = "../cities/data/";
+    char basepath[16 + sizeof(city_amount) + sizeof(file_ending)] = "../../cities/data/";
     strcat(basepath, city_amount);
     strcat(basepath, file_ending);
     //printf("%s", basepath);
 
     int data[N_CITIES][2];
-    readCsv(basepath, data,N_CITIES);
+    readCitiesFromCsv(basepath, cities);
 
-    getCities5(cities);
+    // getCities5(cities);
 
     // Initialize the pheromone levels to the initial value
     for (i = 0; i < N_CITIES; i++) {
@@ -148,6 +148,13 @@ int main() {
             min_index = i;
         }
     }
+    // check if all cities were visited
+    int visited_cities = 0;
+    for (int k = 0; k < N_CITIES; ++k) {
+        if(ants[min_index].visited[k])
+            visited_cities++;
+    }
+    printf("%d Cities\n", visited_cities);
     // Print the shortest tour
     printf("Shortest tour: ");
     for (i = 0; i <= N_CITIES; i++)

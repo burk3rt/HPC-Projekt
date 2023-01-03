@@ -4,5 +4,5 @@
 
 #ifndef HPC_PROJEKT_CSV_INPUT_H
 #define HPC_PROJEKT_CSV_INPUT_H
-int readCsv(char *filename, int *data[], int rows);
+int readCitiesFromCsv(char *filename, City *cities);
 #endif //HPC_PROJEKT_CSV_INPUT_H
