@@ -5,6 +5,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include <sys/timeb.h>
+#include <stdint.h>
+
 
 #define N_CITIES 400                    //  number of cities
 #define N_ANTS 25                      //  number of ants
@@ -28,7 +31,10 @@ typedef struct
     double tour_length;   // Length of current tour
 } Ant;
 
+
+
 void initializeAnts(Ant *ants);
+uint64_t system_current_time_millis();
 
 // Calculate the distance between two cities
 double distance(City city1, City city2)
@@ -64,6 +70,9 @@ int main() {
             phero[i][j] = INIT_PHER;
         }
     }
+
+    // Zeitmessen Start
+    uint64_t start = system_current_time_millis();
 
     // Run the ant algorithm
     for (int generation = 0; generation < N_GENERATIONS; ++generation) {
@@ -147,6 +156,11 @@ int main() {
             min_index = i;
         }
     }
+
+    // Zeitmessen Ende
+    uint64_t end = system_current_time_millis();
+    double sec = (end - start) / 1.0e3;
+
     // check if all cities were visited
     int visited_cities = 0;
     for (int k = 0; k < N_CITIES; ++k) {
@@ -159,8 +173,14 @@ int main() {
     for (i = 0; i <= N_CITIES; i++)
     {
         printf("%d ", ants[min_index].path[i]);
+        if(i == 4){
+            i = N_CITIES - 5;
+            printf(" ... ");
+        }
     }
     printf("\nTour length: %lf\n", ants[min_index].tour_length);
+    printf("Time needed for algorithm to run: %8.4f seconds\n", sec);
+
     return 0;
 }
 
@@ -172,4 +192,17 @@ void initializeAnts(Ant *ants) {
         ants[i].tour_length = 0;              // Set the tour length to 0
         memset(ants[i].visited, 0, sizeof ants[i].visited);
     }
+}
+
+uint64_t system_current_time_millis()
+{
+#if defined(_WIN32) || defined(_WIN64)
+    struct _timeb timebuffer;
+    _ftime(&timebuffer);
+    return (uint64_t)(((timebuffer.time * 1000) + timebuffer.millitm));
+#else
+    struct timeb timebuffer;
+    ftime(&timebuffer);
+    return (uint64_t)(((timebuffer.time * 1000) + timebuffer.millitm));
+#endif
 }
