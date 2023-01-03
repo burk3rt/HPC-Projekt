@@ -15,12 +15,7 @@
 #define QVAL 100                     // Pheromone deposit coefficient
 #define INIT_PHER (1.0 / N_CITIES) // Initial pheromone level
 
-// Structure to represent a city
-typedef struct
-{
-    int x; // X coordinate
-    int y; // Y coordinate
-} City;
+
 // Structure to represent an ant
 typedef struct
 {
