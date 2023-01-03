@@ -59,7 +59,7 @@ int main() {
     char basepath[18 + sizeof(city_amount) + sizeof(file_ending)] = "../../cities/data/";
     strcat(basepath, city_amount);
     strcat(basepath, file_ending);
-    //printf("%s", basepath);
+    printf("Size of int: %d bytes\n", sizeof(double));
 
     int data[N_CITIES][2];
     readCitiesFromCsv(basepath, cities);

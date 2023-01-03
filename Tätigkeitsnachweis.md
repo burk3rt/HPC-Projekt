@@ -13,3 +13,5 @@
 
 31.12.; 2.5h: Optimierung des Plain_C Algorithmus, Einbau mehrerer Generationen von Ants
 02.12.; 2.5h: Review von Luca´s Fixes, CSV Input begonnen
+03.12.; 2.0h: Review CSV Input, simplen Zeitbenchmark für plain_c eingebaut, opencl lauffähig im Projekt
+03.12.; 1h: Diagramm Speicherzugriffübersicht
