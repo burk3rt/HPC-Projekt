@@ -15,6 +15,12 @@
 #define QVAL 100                     // Pheromone deposit coefficient
 #define INIT_PHER (1.0 / N_CITIES) // Initial pheromone level
 
+// Structure to represent a city
+typedef struct
+{
+    int x; // X coordinate
+    int y; // Y coordinate
+} City;
 // Structure to represent an ant
 typedef struct
 {
@@ -49,15 +55,13 @@ int main() {
     char city_amount[sizeof(N_CITIES)] = "";
     sprintf(city_amount, "%d", N_CITIES);
     char file_ending [] = ".csv";
-    char basepath[16 + sizeof(city_amount) + sizeof(file_ending)] = "../../cities/data/";
+    char basepath[18 + sizeof(city_amount) + sizeof(file_ending)] = "../../cities/data/";
     strcat(basepath, city_amount);
     strcat(basepath, file_ending);
     //printf("%s", basepath);
 
     int data[N_CITIES][2];
     readCitiesFromCsv(basepath, cities);
-
-    // getCities5(cities);
 
     // Initialize the pheromone levels to the initial value
     for (i = 0; i < N_CITIES; i++) {
