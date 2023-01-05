@@ -15,3 +15,4 @@
 02.12.; 2.5h: Review von Luca´s Fixes, CSV Input begonnen
 03.12.; 2.0h: Review CSV Input, simplen Zeitbenchmark für plain_c eingebaut, opencl lauffähig im Projekt
 03.12.; 1h: Diagramm Speicherzugriffübersicht
+05.12.; 4h: Ant Algorithmus in OpenCL skeleton eingebaut, also Datenfelder angepasst und soweit kompilierbar und lauffähig aber inhaltlich unvollständig
