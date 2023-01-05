@@ -256,7 +256,7 @@ int main(int argc, char** argv)
 //        }
         // Execute the kernel
         size_t global_size = N_ANTS;
-        size_t local_size = 128; //TODO anpassen?
+        size_t local_size = 1; //TODO Warum nix größer als 1?
         err = clEnqueueNDRangeKernel(commands, run_ant, 1, NULL, &global_size, &local_size, 0, NULL, NULL);
         if (err){
             fprintf(stderr, "Failed to execute kernel!\n");
@@ -267,12 +267,20 @@ int main(int argc, char** argv)
         clFinish(commands);
 
         // Read back the results from the device to verify the output
-        err = clEnqueueReadBuffer( commands, d_phero, CL_TRUE, 0, N * sizeof(float), phero, 0, NULL, NULL );
+        err = clEnqueueReadBuffer( commands, d_phero, CL_TRUE, 0, N_CITIES * N_CITIES * sizeof(double), phero, 0, NULL, NULL );
         if (err != CL_SUCCESS)
         {
             fprintf(stderr, "Failed to read output array\n");
             return -1;
         }
+
+        err = clEnqueueReadBuffer( commands, d_ants, CL_TRUE, 0, N_ANTS * sizeof(Ant), ants, 0, NULL, NULL );
+        if (err != CL_SUCCESS)
+        {
+            fprintf(stderr, "Failed to read output array\n");
+            return -1;
+        }
+        printf("Test: %d\n", ants[5].tour_length);
 
 //        // Returning to the start city
 //        for (int i = 0; i < N_ANTS; i++)
