@@ -23,35 +23,8 @@
 
 int main(int argc, char** argv)
 {
-    // First get available platforms
-    cl_platform_id *platforms;
-    cl_uint n_platforms;
-    clGetPlatformIDs(MAX_PLATFORMS, NULL, &n_platforms);
-    platforms = (cl_platform_id *) malloc(n_platforms * sizeof(cl_platform_id));
-    clGetPlatformIDs(n_platforms, platforms, NULL);
 
-    if(n_platforms == 0) {
-        fprintf(stderr, "No platforms found. Exiting.");
-        return -1;
-    }
-
-    char name[MAX_NAME_LENGTH];
-    printf("Platforms:\n");
-    for(int i=0;i<n_platforms;i++) 
-    {
-        clGetPlatformInfo(platforms[i], CL_PLATFORM_NAME, sizeof(name), name, NULL);
-        printf("[%d]: %s\n", i, name);
-    }
-    printf("Choose platform (Default 0): ");
-    int choice = 0;
-    scanf("%d", &choice);
-    if(choice < 0 || choice >= n_platforms) {
-        printf("Invalid choice, using platform 0");
-        choice = 0;
-    }
-    cl_platform_id platform;
-    memcpy(&platform, &platforms[choice], sizeof(cl_platform_id));
-    free(platforms);
+    cl_platform_id platform = 0;
 
     // Get Devices for chosen platform
     cl_device_id *devices;
@@ -64,13 +37,14 @@ int main(int argc, char** argv)
         return -1;
     }
 
+    char name[MAX_NAME_LENGTH];
+    int choice = 0;
     printf("Devices:\n");
     for(int i=0;i<n_devices;i++) {
         clGetDeviceInfo(devices[i], CL_DEVICE_NAME, sizeof(name), name, NULL);
         printf("[%d]: %s\n", i, name);
     }
     printf("Choose device (Default 0): ");
-    choice = 0;
     scanf("%d", &choice);
     if(choice < 0 || choice >= n_devices) {
         printf("Invalid choice, using device 0");

@@ -1,6 +1,6 @@
 # MacOS
 macos:
-	clang -framework OpenCL -o tsp-ant.out opencl-skeleton.c
+	clang -framework OpenCL -o tsp-ant.out ant.c
 
 # Windows
 all:
