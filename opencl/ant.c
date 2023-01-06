@@ -7,29 +7,13 @@
 #include <sys/stat.h>
 #include <sys/timeb.h>
 
+#include "config.h"
 #include "../cities/csv-input.c"
 #ifdef __APPLE__
 #include <OpenCL/opencl.h>
 #else
 #include <CL/cl.h>
 #endif
-
-// Ant config
-#define N_CITIES 400                    //  number of cities
-#define N_ANTS 25                      //  number of ants
-#define N_GENERATIONS 1
-#define ALPHA 1.0                    // Pheromone influence
-#define BETA 5.0                     // Distance influence
-#define RHO 0.5                      // Pheromone evaporation coefficient
-#define QVAL 100                     // Pheromone deposit coefficient
-#define INIT_PHER (1.0 / N_CITIES) // Initial pheromone level
-
-// OpenCL config
-#define N (1024*1024*64)
-#define CL_PROGRAM_FILE "opencl-program.cl"
-#define MAX_PLATFORMS 10
-#define MAX_DEVICES 10
-#define MAX_NAME_LENGTH 128
 
 // Structure to represent an ant
 typedef struct
@@ -66,14 +50,14 @@ int main(int argc, char** argv)
     }
 
     char name[MAX_NAME_LENGTH];
-    int choice = 0;
+    int choice = 2;
     printf("Devices:\n");
     for(int i=0;i<n_devices;i++) {
         clGetDeviceInfo(devices[i], CL_DEVICE_NAME, sizeof(name), name, NULL);
         printf("[%d]: %s\n", i, name);
     }
-    printf("Choose device (Default 0): ");
-    scanf("%d", &choice);
+    printf("Choose device (Default %d): ", choice);
+    //scanf("%d", &choice);
     if(choice < 0 || choice >= n_devices) {
         printf("Invalid choice, using device 0");
         choice = 0;
@@ -122,7 +106,7 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    err = clBuildProgram(program, 0, NULL, NULL, NULL, NULL);
+    err = clBuildProgram(program, 0, NULL, "-I ./", NULL, NULL);
     if (err != CL_SUCCESS)
     {
         size_t len;
@@ -144,8 +128,14 @@ int main(int argc, char** argv)
     }
 
     // Create arrays in device memory
+    City cities[N_CITIES];              // Array of cities
+    Ant ants[N_ANTS];                   // Array of ants
+    double phero[N_CITIES][N_CITIES];   // Pheromone levels on the edges
+
     cl_mem d_cities = clCreateBuffer(context, CL_MEM_READ_ONLY, N_CITIES * sizeof(City), NULL, NULL);
     cl_mem d_ants = clCreateBuffer(context, CL_MEM_READ_WRITE, N_ANTS * sizeof(Ant), NULL, NULL);
+    //Flatten 2d phero array
+    double *ptr_to_phero = phero[0];
     cl_mem d_phero = clCreateBuffer(context, CL_MEM_READ_WRITE, N_CITIES * N_CITIES * sizeof(double), NULL, NULL);
 
     if(!d_cities || !d_ants || !d_phero)
@@ -157,10 +147,8 @@ int main(int argc, char** argv)
 
     //##################################################################
     // Ant algorithm initiation
-    City cities[N_CITIES];              // Array of cities
-    Ant ants[N_ANTS];                   // Array of ants
-    double phero[N_CITIES][N_CITIES];   // Pheromone levels on the edges
-    double probs[N_CITIES];             // Probabilities of moving to a city
+
+    //double probs[N_CITIES];             // Probabilities of moving to a city
 
     // Find the data source depending on the number of cities
     printf("number cities=%d, number ants=%d\n", N_CITIES, N_ANTS);
@@ -180,32 +168,6 @@ int main(int argc, char** argv)
         }
     }
 
-    // Copy data of a and b to device
-    err = clEnqueueWriteBuffer(commands, d_cities, CL_TRUE, 0, N_CITIES * sizeof(City), cities, 0, NULL, NULL);
-    if (err != CL_SUCCESS) {
-        fprintf(stderr, "Failed to write to device array\n");
-        return -1;
-    }
-    err = clEnqueueWriteBuffer(commands, d_ants, CL_TRUE, 0, N_ANTS * sizeof(Ant), ants, 0, NULL, NULL);
-    if (err != CL_SUCCESS) {
-        fprintf(stderr, "Failed to write to device array\n");
-        return -1;
-    }
-    err = clEnqueueWriteBuffer(commands, d_phero, CL_TRUE, 0, N_CITIES * N_CITIES * sizeof(double), phero, 0, NULL, NULL);
-    if (err != CL_SUCCESS) {
-        fprintf(stderr, "Failed to write to device array\n");
-        return -1;
-    }
-
-    // Set the arguments to our compute kernel
-    err = 0;
-    err  = clSetKernelArg(run_ant, 0, sizeof(cl_mem), &d_cities);
-    err |= clSetKernelArg(run_ant, 1, sizeof(cl_mem), &d_ants);
-    err |= clSetKernelArg(run_ant, 2, sizeof(cl_mem), &d_phero);
-    if (err != CL_SUCCESS){
-        fprintf(stderr, "Failed to set kernel arguments!\n");
-        return -1;
-    }
 
     uint64_t start = system_current_time_millis();
 
@@ -213,6 +175,35 @@ int main(int argc, char** argv)
     for (int generation = 0; generation < N_GENERATIONS; ++generation) {
         // Initialize the ants
         initializeAnts(ants);
+
+        // Copy data to device
+        err = clEnqueueWriteBuffer(commands, d_cities, CL_TRUE, 0, N_CITIES * sizeof(City), cities, 0, NULL, NULL);
+        if (err != CL_SUCCESS) {
+            fprintf(stderr, "Failed to write to device array\n");
+            return -1;
+        }
+        err = clEnqueueWriteBuffer(commands, d_ants, CL_TRUE, 0, N_ANTS * sizeof(Ant), ants, 0, NULL, NULL);
+        if (err != CL_SUCCESS) {
+            fprintf(stderr, "Failed to write to device array\n");
+            return -1;
+        }
+        err = clEnqueueWriteBuffer(commands, d_phero, CL_TRUE, 0, N_CITIES * N_CITIES * sizeof(double), phero, 0, NULL, NULL);
+        if (err != CL_SUCCESS) {
+            fprintf(stderr, "Failed to write to device array\n");
+            return -1;
+        }
+
+        // Set the arguments to our compute kernel
+        err = 0;
+        err  = clSetKernelArg(run_ant, 0, sizeof(cl_mem), &d_cities);
+        err |= clSetKernelArg(run_ant, 1, sizeof(cl_mem), &d_ants);
+        err |= clSetKernelArg(run_ant, 2, sizeof(cl_mem), &d_phero);
+        if (err != CL_SUCCESS){
+            fprintf(stderr, "Failed to set kernel arguments!\n");
+            return -1;
+        }
+        clFinish(commands);
+
 
 //        for (int tour_steps = 0; tour_steps < N_CITIES; ++tour_steps) {
 //            // Have each ant explore the solution space
@@ -255,9 +246,9 @@ int main(int argc, char** argv)
 //            }
 //        }
         // Execute the kernel
-        size_t global_size = N_ANTS;
-        size_t local_size = 1; //TODO Warum nix größer als 1?
-        err = clEnqueueNDRangeKernel(commands, run_ant, 1, NULL, &global_size, &local_size, 0, NULL, NULL);
+        size_t global_work_size = N_ANTS;
+        size_t local_size = N_ANTS; //TODO Warum nix größer als 1?
+        err = clEnqueueNDRangeKernel(commands, run_ant, 1, NULL, &global_work_size, &local_size, 0, NULL, NULL);
         if (err){
             fprintf(stderr, "Failed to execute kernel!\n");
             return -1;
@@ -280,7 +271,7 @@ int main(int argc, char** argv)
             fprintf(stderr, "Failed to read output array\n");
             return -1;
         }
-        printf("Test: %d\n", ants[5].tour_length);
+        printf("Test: %f\n", ants[5].tour_length);
 
 //        // Returning to the start city
 //        for (int i = 0; i < N_ANTS; i++)
