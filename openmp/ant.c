@@ -49,6 +49,7 @@ int main() {
     City cities[N_CITIES];              // Array of cities
     Ant ants[N_ANTS];                   // Array of ants
     double phero[N_CITIES][N_CITIES];   // Pheromone levels on the edges
+    double probs[N_CITIES];             // Probabilities of moving to a city     // Number of ants
 
     // Read in the number of cities and ants
     printf("OPEN_MP\n");
@@ -79,11 +80,10 @@ int main() {
         // Initialize the ants
         initializeAnts(ants);
 
-        #pragma omp parallel for
+        #pragma omp parallel for collapse(2) private(probs)
         // Have each ant explore the solution space
         for (int i = 0; i < N_ANTS; i++) {
             for (int tour_steps = 0; tour_steps < N_CITIES; ++tour_steps) {
-                if (ants[i].path_index < N_CITIES) { // If the ant has not visited all the cities
                     //Calculate denominator to distribute possibility between 0 and 1
                     double denominator = 0.0;
                     for (int k = 0; k < N_CITIES; k++) {
@@ -94,7 +94,6 @@ int main() {
                         }
                     }
                     // Calculate the probabilities of moving to each city
-                    double probs[N_CITIES];             // Probabilities of moving to a city     // Number of ants
                     for (int j = 0; j < N_CITIES; j++) {
                         if (j != ants[i].cur_city && !ants[i].visited[j]) { // Cannot move to current city OR already visited city
                             probs[j] = pow(phero[ants[i].cur_city][j], ALPHA) *
@@ -118,7 +117,6 @@ int main() {
                     ants[i].path[ants[i].path_index++] = ants[i].cur_city;
                     ants[i].tour_length += distance(cities[ants[i].cur_city], cities[ants[i].next_city]);
                     ants[i].cur_city = ants[i].next_city;
-                }
             }
         }
         // Returning to the start city
@@ -129,14 +127,19 @@ int main() {
         }
 
         // Update the pheromone levels
+        #pragma omp parallel for collapse(2)
         for (int i = 0; i < N_ANTS; i++) {
             for (int j = 1; j < N_CITIES; j++) {
                 phero[ants[i].path[j - 1]][ants[i].path[j]] += QVAL / ants[i].tour_length;
+                if(j == N_CITIES-1){
+                    phero[ants[i].path[N_CITIES - 1]][ants[i].path[0]] += QVAL / ants[i].tour_length; // Return to starting city
+                }
             }
-            phero[ants[i].path[N_CITIES - 1]][ants[i].path[0]] += QVAL / ants[i].tour_length; // Return to starting city
+
         }
 
         // Evaporate pheromones
+        #pragma omp parallel for collapse(2)
         for (int i = 0; i < N_CITIES; i++) {
             for (int j = 0; j < N_CITIES; j++) {
                 phero[i][j] *= (1.0 - RHO);
@@ -150,6 +153,7 @@ int main() {
     // Find the shortest tour
     int min_index = 0;
     double min_length = ants[0].tour_length;
+    #pragma omp parallel reduction (min: min_index)
     for (int i = 1; i < N_ANTS; i++)
     {
         if (ants[i].tour_length < min_length)
