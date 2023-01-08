@@ -26,6 +26,13 @@ __kernel void vector_add(__global const float *a, __global const float *b, __glo
 __kernel void run_ant(__global City *cities, __global Ant *ants, __global double *phero)
 {
     int i = get_global_id(0);
-    printf("Größe Cities: %d; Index: %d\n", N_CITIES, i);
-    ants[i].tour_length = 100;
+    printf("Phero: %f  Index: %d\n", phero[1* N_CITIES + 2], i);
+    printf("Phero: %f  Index: %d\n", phero[2* N_CITIES + 3], i);
+//    for(int j = 0; j < N_CITIES; j++){
+//        for(int k = 0; k < N_CITIES; k++){
+//            if(phero[j * 400 + k] != 0.002500){
+//                printf("Value: %f, IndexJ: %d, IndexK: %d\n", phero[j * 400 + k], j, k);
+//            }
+//        }
+//    }
 }

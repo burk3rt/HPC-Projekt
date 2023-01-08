@@ -130,12 +130,10 @@ int main(int argc, char** argv)
     // Create arrays in device memory
     City cities[N_CITIES];              // Array of cities
     Ant ants[N_ANTS];                   // Array of ants
-    double phero[N_CITIES][N_CITIES];   // Pheromone levels on the edges
+    double phero[N_CITIES*N_CITIES];   // Pheromone levels on the edges
 
     cl_mem d_cities = clCreateBuffer(context, CL_MEM_READ_ONLY, N_CITIES * sizeof(City), NULL, NULL);
     cl_mem d_ants = clCreateBuffer(context, CL_MEM_READ_WRITE, N_ANTS * sizeof(Ant), NULL, NULL);
-    //Flatten 2d phero array
-    double *ptr_to_phero = phero[0];
     cl_mem d_phero = clCreateBuffer(context, CL_MEM_READ_WRITE, N_CITIES * N_CITIES * sizeof(double), NULL, NULL);
 
     if(!d_cities || !d_ants || !d_phero)
@@ -162,12 +160,11 @@ int main(int argc, char** argv)
     readCitiesFromCsv(basepath, cities);
 
     // Initialize the pheromone levels to the initial value
-    for (int i = 0; i < N_CITIES; i++) {
-        for (int j = 0; j < N_CITIES; j++) {
-            phero[i][j] = INIT_PHER;
-        }
+    for (int i = 0; i < N_CITIES * N_CITIES; i++) {
+        phero[i] = INIT_PHER;
     }
-
+    phero[1 * N_CITIES + 2] = 0.2;
+    phero[2 * N_CITIES + 3] = 0.5;
 
     uint64_t start = system_current_time_millis();
 
@@ -177,17 +174,17 @@ int main(int argc, char** argv)
         initializeAnts(ants);
 
         // Copy data to device
-        err = clEnqueueWriteBuffer(commands, d_cities, CL_TRUE, 0, N_CITIES * sizeof(City), cities, 0, NULL, NULL);
+        err = clEnqueueWriteBuffer(commands, d_cities, CL_TRUE, 0, N_CITIES * sizeof(City), &cities, 0, NULL, NULL);
         if (err != CL_SUCCESS) {
             fprintf(stderr, "Failed to write to device array\n");
             return -1;
         }
-        err = clEnqueueWriteBuffer(commands, d_ants, CL_TRUE, 0, N_ANTS * sizeof(Ant), ants, 0, NULL, NULL);
+        err = clEnqueueWriteBuffer(commands, d_ants, CL_TRUE, 0, N_ANTS * sizeof(Ant), &ants, 0, NULL, NULL);
         if (err != CL_SUCCESS) {
             fprintf(stderr, "Failed to write to device array\n");
             return -1;
         }
-        err = clEnqueueWriteBuffer(commands, d_phero, CL_TRUE, 0, N_CITIES * N_CITIES * sizeof(double), phero, 0, NULL, NULL);
+        err = clEnqueueWriteBuffer(commands, d_phero, CL_TRUE, 0, N_CITIES * N_CITIES * sizeof(double), &phero, 0, NULL, NULL);
         if (err != CL_SUCCESS) {
             fprintf(stderr, "Failed to write to device array\n");
             return -1;
