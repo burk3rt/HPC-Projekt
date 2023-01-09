@@ -9,3 +9,10 @@
 - Import von Header in cl File nicht hinbekomme
 - Randoms bekommen schwierig [Quelle](https://stackoverflow.com/questions/9912143/how-to-get-a-random-number-in-opencl)
   - Java Variante produziert ziemlich gleiche Ergebnisse
+- Speicherzugriffe
+  - Anhand von Bild erklären, was wie verschoben wurde (Loops getauscht, Write Buffer, Return ant to home)
+- Resultvalidation (sind alle Städte besucht worden?)
+# Offene Optimierung
+- Parameter, welche sich auf den Algorithmus beziehen nicht mit kompilieren, sodass die Lösung programmgesteuert verschieden Werte ausprobieren kann.
+- (Beste) Tour einer Generation zwischenspeichern
+- Wenn möglich Ant immer auf gleichem Work Item schedulen um Ant synchro zu vernachlässigen

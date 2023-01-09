@@ -164,80 +164,80 @@ int main(int argc, char** argv)
         phero[i] = INIT_PHER;
     }
 
+    // Copy constant (for host) data to device
+    err = clEnqueueWriteBuffer(commands, d_cities, CL_TRUE, 0, N_CITIES * sizeof(City), &cities, 0, NULL, NULL);
+    if (err != CL_SUCCESS) {
+        fprintf(stderr, "Failed to write to device array\n");
+        return -1;
+    }
+
     uint64_t start = system_current_time_millis();
 
     // Run the ant algorithm
     for (int generation = 0; generation < N_GENERATIONS; ++generation) {
         // Initialize the ants
+        printf("1Debug Host: %d\n",ants[27].path[16]);
         initializeAnts(ants);
+        printf("2Debug Host: %d\n",ants[27].path[16]);
 
-        // Copy data to device
-        err = clEnqueueWriteBuffer(commands, d_cities, CL_TRUE, 0, N_CITIES * sizeof(City), &cities, 0, NULL, NULL);
-        if (err != CL_SUCCESS) {
-            fprintf(stderr, "Failed to write to device array\n");
-            return -1;
-        }
-        err = clEnqueueWriteBuffer(commands, d_ants, CL_TRUE, 0, N_ANTS * sizeof(Ant), &ants, 0, NULL, NULL);
-        if (err != CL_SUCCESS) {
-            fprintf(stderr, "Failed to write to device array\n");
-            return -1;
-        }
+        // Copy / Update data to device
         err = clEnqueueWriteBuffer(commands, d_phero, CL_TRUE, 0, N_CITIES * N_CITIES * sizeof(double), &phero, 0, NULL, NULL);
-        if (err != CL_SUCCESS) {
-            fprintf(stderr, "Failed to write to device array\n");
-            return -1;
-        }
+        if (err != CL_SUCCESS) { fprintf(stderr, "Failed to write to device array\n"); return -1; }
+
+        err = clEnqueueWriteBuffer(commands, d_ants, CL_TRUE, 0, N_ANTS * sizeof(Ant), &ants, 0, NULL, NULL);
+        if (err != CL_SUCCESS) { fprintf(stderr, "Failed to write to device array\n"); return -1; }
+
         cl_ulong seed = concatenate(rand(),rand());
         err = clEnqueueWriteBuffer(commands, d_seed, CL_TRUE, 0, sizeof(cl_ulong), &seed, 0, NULL, NULL);
-        if (err != CL_SUCCESS) {
-            fprintf(stderr, "Failed to write to device array\n");
-            return -1;
-        }
+        if (err != CL_SUCCESS) {fprintf(stderr, "Failed to write to device array\n");return -1;}
         clFinish(commands);
 
 
         // Execute the kernel
         size_t global_work_size = N_ANTS;
-        size_t local_size = N_ANTS; //TODO Warum nix größer als 1?
+        size_t local_size = 1;
         err = clEnqueueNDRangeKernel(commands, run_ant, 1, NULL, &global_work_size, &local_size, 0, NULL, NULL);
-        if (err){
-            fprintf(stderr, "Failed to execute kernel!\n");
-            return -1;
-        }
+        if (err){fprintf(stderr, "Failed to execute kernel!\n");return -1;}
 
         // Wait for the commands to get serviced before reading back results
         clFinish(commands);
 
-        // Read back the results from the device to verify the output
+        // Read back the results from the device
         err = clEnqueueReadBuffer( commands, d_ants, CL_TRUE, 0, N_ANTS * sizeof(Ant), ants, 0, NULL, NULL );
-        if (err != CL_SUCCESS)
-        {
-            fprintf(stderr, "Failed to read output array\n");
-            return -1;
-        }
-        printf("Test: %f\n", ants[5].tour_length);
+        if (err != CL_SUCCESS) {fprintf(stderr, "Failed to read output array\n");return -1;}
 
-//        // Returning to the start city
-//        for (int i = 0; i < N_ANTS; i++)
-//        {
-//            ants[i].path[ants[i].path_index] = ants[i].start_city;
-//            ants[i].tour_length += distance(cities[ants[i].cur_city], cities[ants[i].start_city]);
-//        }
-//
-//        // Update the pheromone levels
-//        for (int i = 0; i < N_ANTS; i++) {
-//            for (int j = 1; j < N_CITIES; j++) {
-//                phero[ants[i].path[j - 1]][ants[i].path[j]] += QVAL / ants[i].tour_length;
-//            }
-//            phero[ants[i].path[N_CITIES - 1]][ants[i].path[0]] += QVAL / ants[i].tour_length; // Return to starting city
-//        }
-//
-//        // Evaporate pheromones
-//        for (int i = 0; i < N_CITIES; i++) {
-//            for (int j = 0; j < N_CITIES; j++) {
-//                phero[i][j] *= (1.0 - RHO);
-//            }
-//        }
+        err = clEnqueueReadBuffer( commands, d_phero, CL_TRUE, 0, N_CITIES * N_CITIES * sizeof(double), phero, 0, NULL, NULL );
+        if (err != CL_SUCCESS) {fprintf(stderr, "Failed to read output array\n");return -1;}
+
+        clFinish(commands);
+        printf("2Debug Host: %d\n",ants[27].path[16]);
+
+        // Update the pheromone levels
+        for (int i = 0; i < N_ANTS; i++) {
+            uint8_t resultValidation[N_CITIES];
+            memset(resultValidation, 0, N_CITIES);
+            for (int j = 1; j < N_CITIES; j++) {
+                //Validate Tours
+                resultValidation[j] = 1;
+
+                phero[ants[i].path[j - 1] * N_CITIES + ants[i].path[j]] += QVAL / ants[i].tour_length;
+            }
+            phero[ants[i].path[N_CITIES - 1] * N_CITIES + ants[i].path[0]] += QVAL / ants[i].tour_length; // Return to starting city
+
+            for(int j = 0; j < N_CITIES; j++){
+                if(resultValidation[j] == 0) {
+                    printf("Unvalid Tour for Ant %d, did not visit City %d\n", i, j);
+
+                }
+            }
+        }
+
+        // Evaporate pheromones
+        for (int i = 0; i < N_CITIES; i++) {
+            for (int j = 0; j < N_CITIES; j++) {
+                phero[i * N_CITIES + j] *= (1.0 - RHO);
+            }
+        }
     }
 
     uint64_t end = system_current_time_millis();

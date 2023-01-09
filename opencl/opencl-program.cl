@@ -24,6 +24,9 @@ double getRandom(ulong seed);
 
 __kernel void run_ant(__constant City *cities, __global Ant *ants, __global double *phero, __constant ulong *seed)
 {
+    if(get_global_id(0) == 27){
+        printf("1Debug Device: %d\n",ants[get_global_id(0)].path[16]);
+    }
     Ant ant_i = ants[get_global_id(0)];
     double probs[N_CITIES];
     for(int tour_steps = 0; tour_steps < N_CITIES; tour_steps++){
@@ -55,12 +58,20 @@ __kernel void run_ant(__constant City *cities, __global Ant *ants, __global doub
                     break;
                 }
             }
+            //Write Results to Ant
             ant_i.visited[ant_i.cur_city] = 1;
             ant_i.path[ant_i.path_index++] = ant_i.cur_city;
             ant_i.tour_length += clDistance(cities[ant_i.cur_city], cities[ant_i.next_city]);
             ant_i.cur_city = ant_i.next_city;
         }
     }
+    //Returning to start city
+    ant_i.path[ant_i.path_index] = ant_i.start_city;
+    ant_i.tour_length += clDistance(cities[ant_i.cur_city], cities[ant_i.start_city]);
+    if(get_global_id(0)==27){
+        printf("2Debug Device: %d\n",ants[get_global_id(0)].path[16]);
+    }
+    ants[get_global_id(0)] = ant_i;
 }
 
 double clDistance(City city1, City city2)
