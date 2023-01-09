@@ -1,4 +1,37 @@
-\section{Motivation}
-0,5 Seiten
-\section{Problemstellung}
-0,5 - 1 Seiten
+\section{Motivation 0,5 S}
+Das Travelling-Salesman-Problem (\acs*{tsp}) ist ein Optimierungsproblem bzw. ein Rundreiseproblem aus dem Operations Reasearch Umfeld.
+\\\\
+Ein Reisender muss eine begrenzte Anzahl an Städten besuchen und sucht nach einer optimalen Strecke, die alle Städte genau einmal enthält. 
+Eine optimale Lösung ist dabei diejenige, die am kürzesten, günstigsten oder schnellsten ist, je nachdem, welches Ziel man verfolgt. \cite*{TravellingSalesmanProblemProblemHandlungsreisenden}
+\\\\
+Das TSP findet in vielen verschiedenen Bereichen Anwendung, in denen es darum geht, Routen oder Touren zu planen, bei denen alle Ziele besucht werden müssen. \\
+Beispiele dafür sind:
+\begin{itemize}
+    \item Produktionsprozesse:
+            Einkauf, Produktion, Lagerung und Belieferung der Kunden möglichst kostengünstig unter Einhaltung von Fristen und Kapazitäten.
+    \item Militär:
+            Eine Truppe muss alle Stützpunkte besuchen und dabei möglichst wenig Ressourcen verbrauchen. 
+    \item Tourismus:
+            Ein Tourist möchte möglichst viele Sehenswürdigkeiten in einer Stadt besuchen und möglichst die Route mit der kürzesten Strecke nehmen.
+\end{itemize}
+
+\noindent Unser Ziel ist es das Tourismus-Problem zu lösen und die Laufzeit des Algorithmus zur Berechnung der Strecke zu optimieren.
+Dabei betrachten wird ausschließlich symmetrische Graphen.
+
+\section{Problemstellung 0,5 - 1 S}
+Das \acs*{tsp} ist ein NP-schweres Problem, was bedeutet, dass es schwierig ist, eine effiziente Lösung zu finden. 
+Die Anzahl der verschiedenen möglichen Routen hängt davon ab, ob es ein Symmetrischer oder Asymmetrischer Graph ist.\cite*{gmbhTravelingSalesmanProblemOperationsResearch}
+
+\begin{itemize}
+    \item Symmetrischer Graph: Kantenlängen von einem zum anderen Konten sind in beiden Richtungen identisch.\\
+            Anzahl Routen: (n-1)!/2\\
+            Bsp.:   15 Städte: (15-1)!/2 = 43 Milliarden
+    \item Asymmetrischer Graph: Kantenlängen von einem zum anderen Konten sind nicht in beiden Richtungen identisch.\\
+            Anzahl Routen: (n-1)!\\
+            Bsp.:   15 Städte: (15-1)! = 87 Milliarden
+\end{itemize}
+
+\noindent Es gibt viele verschiedene Algorithmen, die versuchen, das \acs*{tsp} zu lösen.
+Die exakten Algorithmen, welche eine optimale Lösung garantieren in dem sie beispielsweise jede mögliche Route berechnen, sind aber aufgrund der großen Anzahl an möglichen Routen nur für kleine Graphen möglich.
+
+
