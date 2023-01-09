@@ -7,25 +7,13 @@
 #include <sys/stat.h>
 #include <sys/timeb.h>
 
-#include "config.h"
+#include "ant.h"
 #include "../cities/csv-input.c"
 #ifdef __APPLE__
 #include <OpenCL/opencl.h>
 #else
 #include <CL/cl.h>
 #endif
-
-// Structure to represent an ant
-typedef struct
-{
-    int cur_city;         // Current city
-    int next_city;        // Next city to visit
-    int start_city;       // Start city
-    int path_index;       // Index in the path array
-    int path[N_CITIES+1];     // Visited cities in order
-    int visited[N_CITIES+1]; // Array to keep track of visited cities
-    double tour_length;   // Length of current tour
-} Ant;
 
 
 void initializeAnts(Ant *ants);
@@ -106,7 +94,7 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    err = clBuildProgram(program, 0, NULL, "-I ./", NULL, NULL);
+    err = clBuildProgram(program, 0, NULL, "-I/Users/benny/Documents/hs-prog/HPC-Projekt/opencl/", NULL, NULL);
     if (err != CL_SUCCESS)
     {
         size_t len;
@@ -134,7 +122,8 @@ int main(int argc, char** argv)
 
     cl_mem d_cities = clCreateBuffer(context, CL_MEM_READ_ONLY, N_CITIES * sizeof(City), NULL, NULL);
     cl_mem d_ants = clCreateBuffer(context, CL_MEM_READ_WRITE, N_ANTS * sizeof(Ant), NULL, NULL);
-    cl_mem d_phero = clCreateBuffer(context, CL_MEM_READ_WRITE, N_CITIES * N_CITIES * sizeof(double), NULL, NULL);
+    cl_mem d_phero = clCreateBuffer(context, CL_MEM_READ_ONLY, N_CITIES * N_CITIES * sizeof(double), NULL, NULL);
+    cl_mem d_seed = clCreateBuffer(context, CL_MEM_READ_ONLY, sizeof(int), NULL, NULL);
 
     if(!d_cities || !d_ants || !d_phero)
     {
@@ -142,6 +131,16 @@ int main(int argc, char** argv)
         return -1;
     }
 
+    // Set the arguments to our compute kernel
+    err  = 0;
+    err  = clSetKernelArg(run_ant, 0, sizeof(cl_mem), &d_cities);
+    err |= clSetKernelArg(run_ant, 1, sizeof(cl_mem), &d_ants);
+    err |= clSetKernelArg(run_ant, 2, sizeof(cl_mem), &d_phero);
+    err |= clSetKernelArg(run_ant, 3, sizeof(cl_mem), &d_seed);
+    if (err != CL_SUCCESS){
+        fprintf(stderr, "Failed to set kernel arguments!\n");
+        return -1;
+    }
 
     //##################################################################
     // Ant algorithm initiation
@@ -163,8 +162,6 @@ int main(int argc, char** argv)
     for (int i = 0; i < N_CITIES * N_CITIES; i++) {
         phero[i] = INIT_PHER;
     }
-    phero[1 * N_CITIES + 2] = 0.2;
-    phero[2 * N_CITIES + 3] = 0.5;
 
     uint64_t start = system_current_time_millis();
 
@@ -189,14 +186,10 @@ int main(int argc, char** argv)
             fprintf(stderr, "Failed to write to device array\n");
             return -1;
         }
-
-        // Set the arguments to our compute kernel
-        err = 0;
-        err  = clSetKernelArg(run_ant, 0, sizeof(cl_mem), &d_cities);
-        err |= clSetKernelArg(run_ant, 1, sizeof(cl_mem), &d_ants);
-        err |= clSetKernelArg(run_ant, 2, sizeof(cl_mem), &d_phero);
-        if (err != CL_SUCCESS){
-            fprintf(stderr, "Failed to set kernel arguments!\n");
+        int seed = rand();
+        err = clEnqueueWriteBuffer(commands, d_seed, CL_TRUE, 0, sizeof(int), &seed, 0, NULL, NULL);
+        if (err != CL_SUCCESS) {
+            fprintf(stderr, "Failed to write to device array\n");
             return -1;
         }
         clFinish(commands);
@@ -255,13 +248,6 @@ int main(int argc, char** argv)
         clFinish(commands);
 
         // Read back the results from the device to verify the output
-        err = clEnqueueReadBuffer( commands, d_phero, CL_TRUE, 0, N_CITIES * N_CITIES * sizeof(double), phero, 0, NULL, NULL );
-        if (err != CL_SUCCESS)
-        {
-            fprintf(stderr, "Failed to read output array\n");
-            return -1;
-        }
-
         err = clEnqueueReadBuffer( commands, d_ants, CL_TRUE, 0, N_ANTS * sizeof(Ant), ants, 0, NULL, NULL );
         if (err != CL_SUCCESS)
         {

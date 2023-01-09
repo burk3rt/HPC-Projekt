@@ -14,3 +14,15 @@
 #define MAX_PLATFORMS 10
 #define MAX_DEVICES 10
 #define MAX_NAME_LENGTH 128
+
+// Structure to represent an ant
+typedef struct
+{
+    int cur_city;         // Current city
+    int next_city;        // Next city to visit
+    int start_city;       // Start city
+    int path_index;       // Index in the path array
+    int path[N_CITIES+1];     // Visited cities in order
+    int visited[N_CITIES+1]; // Array to keep track of visited cities
+    double tour_length;   // Length of current tour
+} Ant;
