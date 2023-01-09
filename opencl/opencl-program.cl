@@ -24,7 +24,7 @@ int getRandom(int seed);
 
 __kernel void run_ant(__constant City *cities, __global Ant *ants, __global double *phero, __constant int *seed)
 {
-    printf("%lu\n", getRandom(seed));
+    printf("%lu\n", getRandom(*seed));
     Ant ant_i = ants[get_global_id(0)];
     double probs[N_CITIES];
     for(int tour_steps = 0; tour_steps < N_CITIES; tour_steps++){
@@ -71,7 +71,6 @@ double clDistance(City city1, City city2)
 int getRandom(int seed)
 {
     ulong l_seed = seed + get_global_id(0);
-    //printf("Long Seed: %lu", l_seed);
     l_seed = (l_seed * 0x5DEECE66DL + 0xBL) & ((1L << 48) - 1);
     return l_seed >> 16;
 }

@@ -94,7 +94,7 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    err = clBuildProgram(program, 0, NULL, "-I/Users/benny/Documents/hs-prog/HPC-Projekt/opencl/", NULL, NULL);
+    err = clBuildProgram(program, 0, NULL, "", NULL, NULL);
     if (err != CL_SUCCESS)
     {
         size_t len;

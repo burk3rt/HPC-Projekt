@@ -8,4 +8,4 @@
   - Innerer next City selection loop muss vorherige Stadt kennen -> Synchronisieren
 - Import von Header in cl File nicht hinbekomme
 - Randoms bekommen schwierig [Quelle](https://stackoverflow.com/questions/9912143/how-to-get-a-random-number-in-opencl)
-- 
+  - Java Variante produziert ziemlich gleiche Ergebnisse
