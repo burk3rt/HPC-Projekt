@@ -9,7 +9,8 @@
 03.12.; 2.5h; CSV Input, Cities als csv einlesen, CSVs erstellen\
 04.12.; 2.5h; OpenMP begonnen \
 06.12.; 2.5h; OpenMP Verbesserung des Algorithmus\
-07.12.; 0.5h; OpenMP Verbesserung des Algorithmus
+07.12.; 0.5h; OpenMP Verbesserung des Algorithmus\
+08.12.; 5.0h; Bericht
 ---
 ## Benny
 
