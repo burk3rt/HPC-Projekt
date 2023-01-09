@@ -19,6 +19,7 @@
 void initializeAnts(Ant *ants);
 double distance(City city1, City city2);
 uint64_t system_current_time_millis();
+cl_ulong concatenate(uint32_t x, uint32_t y);
 
 int main(int argc, char** argv)
 {
@@ -123,7 +124,7 @@ int main(int argc, char** argv)
     cl_mem d_cities = clCreateBuffer(context, CL_MEM_READ_ONLY, N_CITIES * sizeof(City), NULL, NULL);
     cl_mem d_ants = clCreateBuffer(context, CL_MEM_READ_WRITE, N_ANTS * sizeof(Ant), NULL, NULL);
     cl_mem d_phero = clCreateBuffer(context, CL_MEM_READ_ONLY, N_CITIES * N_CITIES * sizeof(double), NULL, NULL);
-    cl_mem d_seed = clCreateBuffer(context, CL_MEM_READ_ONLY, sizeof(int), NULL, NULL);
+    cl_mem d_seed = clCreateBuffer(context, CL_MEM_READ_ONLY, sizeof(cl_ulong), NULL, NULL);
 
     if(!d_cities || !d_ants || !d_phero)
     {
@@ -186,8 +187,8 @@ int main(int argc, char** argv)
             fprintf(stderr, "Failed to write to device array\n");
             return -1;
         }
-        int seed = rand();
-        err = clEnqueueWriteBuffer(commands, d_seed, CL_TRUE, 0, sizeof(int), &seed, 0, NULL, NULL);
+        cl_ulong seed = concatenate(rand(),rand());
+        err = clEnqueueWriteBuffer(commands, d_seed, CL_TRUE, 0, sizeof(cl_ulong), &seed, 0, NULL, NULL);
         if (err != CL_SUCCESS) {
             fprintf(stderr, "Failed to write to device array\n");
             return -1;
@@ -195,46 +196,6 @@ int main(int argc, char** argv)
         clFinish(commands);
 
 
-//        for (int tour_steps = 0; tour_steps < N_CITIES; ++tour_steps) {
-//            // Have each ant explore the solution space
-//            for (int i = 0; i < N_ANTS; i++) {
-//                if (ants[i].path_index < N_CITIES) { // If the ant has not visited all the cities
-//                    //Calculate denominator to distribute possibility between 0 and 1
-//                    double denominator = 0.0;
-//                    for (int k = 0; k < N_CITIES; k++) {
-//                        if (k != ants[i].cur_city &&
-//                            !ants[i].visited[k]) { // Cannot move to current city or a visited city
-//                            denominator += pow(phero[ants[i].cur_city][k], ALPHA) *
-//                                           pow(1.0 / distance(cities[ants[i].cur_city], cities[k]), BETA);
-//                        }
-//                    }
-//                    // Calculate the probabilities of moving to each city
-//                    for (int j = 0; j < N_CITIES; j++) {
-//                        if (j != ants[i].cur_city && !ants[i].visited[j]) { // Cannot move to current city OR already visited city
-//                            probs[j] = pow(phero[ants[i].cur_city][j], ALPHA) *
-//                                       pow(1.0 / distance(cities[ants[i].cur_city], cities[j]), BETA) / denominator;
-//                        } else {
-//                            probs[j] = 0.0; // Cannot move to the current city
-//                        }
-//                    }
-//                    // Choose the next city based on the probabilities
-//                    double r = ((double) rand()) / RAND_MAX;
-//                    double total = 0.0;
-//                    for (int j = 0; j < N_CITIES; j++) {
-//                        total += probs[j];
-//                        if (total >= r) {
-//                            ants[i].next_city = j;
-//                            break;
-//                        }
-//                    }
-//                    // Update the ant's current city and path
-//                    ants[i].visited[ants[i].cur_city] = 1;
-//                    ants[i].path[ants[i].path_index++] = ants[i].cur_city;
-//                    ants[i].tour_length += distance(cities[ants[i].cur_city], cities[ants[i].next_city]);
-//                    ants[i].cur_city = ants[i].next_city;
-//                }
-//            }
-//        }
         // Execute the kernel
         size_t global_work_size = N_ANTS;
         size_t local_size = N_ANTS; //TODO Warum nix größer als 1?
@@ -342,4 +303,12 @@ uint64_t system_current_time_millis()
     ftime(&timebuffer);
     return (uint64_t)(((timebuffer.time * 1000) + timebuffer.millitm));
 #endif
+}
+
+//https://stackoverflow.com/questions/12700497/how-to-concatenate-two-integers-in-c
+cl_ulong concatenate(uint32_t x, uint32_t y) {
+    unsigned pow = 10;
+    while(y >= pow)
+        pow *= 10;
+    return x * pow + y;
 }

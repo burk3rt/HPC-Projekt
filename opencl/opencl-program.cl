@@ -20,11 +20,10 @@ typedef struct
 } City;
 
 double clDistance(City city1, City city2);
-int getRandom(int seed);
+double getRandom(ulong seed);
 
-__kernel void run_ant(__constant City *cities, __global Ant *ants, __global double *phero, __constant int *seed)
+__kernel void run_ant(__constant City *cities, __global Ant *ants, __global double *phero, __constant ulong *seed)
 {
-    printf("%lu\n", getRandom(*seed));
     Ant ant_i = ants[get_global_id(0)];
     double probs[N_CITIES];
     for(int tour_steps = 0; tour_steps < N_CITIES; tour_steps++){
@@ -47,15 +46,19 @@ __kernel void run_ant(__constant City *cities, __global Ant *ants, __global doub
                 }
             }
             // Choose the next city based on the probabilities
-            //double r = ;
-//            double total = 0.0;
-//            for (int j = 0; j < N_CITIES; j++) {
-//                total += probs[j];
-//                if (total >= r) {
-//                    ant_i.next_city = j;
-//                    break;
-//                }
-//            }
+            double r = getRandom(*seed);
+            double total = 0.0;
+            for (int j = 0; j < N_CITIES; j++) {
+                total += probs[j];
+                if (total >= r) {
+                    ant_i.next_city = j;
+                    break;
+                }
+            }
+            ant_i.visited[ant_i.cur_city] = 1;
+            ant_i.path[ant_i.path_index++] = ant_i.cur_city;
+            ant_i.tour_length += clDistance(cities[ant_i.cur_city], cities[ant_i.next_city]);
+            ant_i.cur_city = ant_i.next_city;
         }
     }
 }
@@ -68,9 +71,17 @@ double clDistance(City city1, City city2)
 }
 
 // https://stackoverflow.com/questions/9912143/how-to-get-a-random-number-in-opencl
-int getRandom(int seed)
+double getRandom(ulong seed)
 {
     ulong l_seed = seed + get_global_id(0);
     l_seed = (l_seed * 0x5DEECE66DL + 0xBL) & ((1L << 48) - 1);
-    return l_seed >> 16;
+    uint result = (uint) l_seed;
+    uint l_seed2 = result;
+
+    int digits = 0;
+    do {
+        l_seed2 /= 10;
+        ++digits;
+    } while (l_seed2 != 0);
+    return result / pow(10.0, (double) (digits));
 }
