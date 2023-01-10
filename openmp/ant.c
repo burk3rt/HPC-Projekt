@@ -148,8 +148,6 @@ int main() {
     }
     // Finished the ant algorithm
 
-
-
     // Find the shortest tour
     int min_index = 0;
     double min_length = ants[0].tour_length;
@@ -167,13 +165,6 @@ int main() {
     uint64_t end = system_current_time_millis();
     double sec = (end - start) / 1.0e3;
 
-    // check if all cities were visited
-    int visited_cities = 0;
-    for (int k = 0; k < N_CITIES; ++k) {
-        if(ants[min_index].visited[k])
-            visited_cities++;
-    }
-    printf("%d Cities\n", visited_cities);
     // Print the shortest tour
     printf("Shortest tour: ");
     for (int i = 0; i <= N_CITIES; i++)
