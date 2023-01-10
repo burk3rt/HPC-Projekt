@@ -1,4 +1,4 @@
-\section{Lösungsansatz 1 S}
+\section{Lösungsansatz}
 
 Zur Berechnung größerer Graphen gibt es sogenannten metaheuristische Verfahren die keine optimale Lösung garantieren.
 Durch probabilistische Schätzungen und heuristische Verfahren können jedoch gute Lösungen gefunden werden.
@@ -24,7 +24,32 @@ Auf diese Weise kann der Algorithmus schrittweise die optimale Tour durch die St
 \end{figure}
 
 \section{Implementierung inklusive Schwierigkeiten}
-1 - 2 Seiten
+1 - 2 Seiten\\
+\subsection*{C Implementierung}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|l|l|}
+    \hline
+                    & Pfadlänge    \\ \hline
+    Online ACO Tool & $\sim$13.000 \\ \hline
+    Plain C         & $\sim$13.500 \\ \hline
+    \end{tabular}
+    \caption{\label{demo-table}Pfadlängenvalidierung}
+\end{table}
+\subsection*{Generelle Anpassungen}
+
+Optimierung des Algorithmus durch Vertauschen der Geschachtelten Ants-Cities for-Schleife.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=16cm]{../images/struktog-optimiert.png}
+    \caption{Algorithmus Struktogramm Optimiert}
+    \label{fig:struktogramm-optimiert}
+\end{figure}
+
+\subsection*{OpenMP Optimierung}
+
+\subsection*{OpenCL Optimierung}
 
 \section{Bewertung}
 Bewertung des Ansatzes und der performance-limitierenden Faktoren (1-2 Seiten)
