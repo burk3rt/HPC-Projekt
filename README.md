@@ -24,6 +24,12 @@
 - [ ] Optimierung OpenMP
 - [ ] Benchmark "Framework"
 ---
+### Tools
+- Stuktogramm: https://dditools.inf.tu-dresden.de/ovk/Informatik/Programmierung/Grundlagen/Struktogramme.html
+- ACO Tool: https://poolik.github.io/visual-aco/
+- Draw.io: https://app.diagrams.net/
+
+---
 
 ## Vorgaben
 Entnommen aus [Übungs Repository](https://github.com/sspeiser/hpc-uebungen#projektarbeit)

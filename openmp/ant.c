@@ -59,6 +59,7 @@ int main() {
     char file_ending [] = ".csv";
     char basepath[18 + sizeof(city_amount) + sizeof(file_ending)] = "../cities/data/";
     strcat(basepath, city_amount);
+    //strcat(basepath, "generated_cities");
     strcat(basepath, file_ending);
     //printf("%s", basepath);
 
