@@ -3,11 +3,10 @@ all:
 exec:
 	gcc -g -o tsp-ant.exe ant.c ../cities/csv-input.c -lm
 	tsp-ant.exe
-execomp:
-	gcc -g -o tsp-ant.exe ant.c ../cities/csv-input.c -fopenmp -lm
+exec-opt:
+	gcc -g -o tsp-ant.exe ant.c ../cities/csv-input.cc -O3 -lm
 	tsp-ant.exe
-clean:
-	rm -rf *.exe
+
 mac:
 	gcc-12 -o tsp-ant.out ant.c ../cities/csv-input.c -lm
 mac-omp:

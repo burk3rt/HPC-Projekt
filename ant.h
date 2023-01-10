@@ -1,6 +1,5 @@
-// Ant config
 #define N_CITIES 400                    //  number of cities
-#define N_ANTS 32                      //  number of ants
+#define N_ANTS 128                      //  number of ants
 #define N_GENERATIONS 10
 #define ALPHA 1.0                    // Pheromone influence
 #define BETA 5.0                     // Distance influence
@@ -26,3 +25,10 @@ typedef struct
     int visited[N_CITIES+1]; // Array to keep track of visited cities
     double tour_length;   // Length of current tour
 } Ant;
+
+// Structure to represent a city
+typedef struct
+{
+    int x; // X coordinate
+    int y; // Y coordinate
+} City;

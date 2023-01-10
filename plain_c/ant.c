@@ -1,5 +1,3 @@
-#include "ant.h"
-#include "../cities/5/cities5.h"
 #include "../cities/csv-input.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,30 +5,6 @@
 #include <string.h>
 #include <sys/timeb.h>
 #include <stdint.h>
-
-
-#define N_CITIES 400                    //  number of cities
-#define N_ANTS 25                      //  number of ants
-#define N_GENERATIONS 10
-#define ALPHA 1.0                    // Pheromone influence
-#define BETA 5.0                     // Distance influence
-#define RHO 0.5                      // Pheromone evaporation coefficient
-#define QVAL 100                     // Pheromone deposit coefficient
-#define INIT_PHER (1.0 / N_CITIES) // Initial pheromone level
-
-
-// Structure to represent an ant
-typedef struct
-{
-    int cur_city;         // Current city
-    int next_city;        // Next city to visit
-    int start_city;       // Start city
-    int path_index;       // Index in the path array
-    int path[N_CITIES+1];     // Visited cities in order
-    int visited[N_CITIES+1]; // Array to keep track of visited cities
-    double tour_length;   // Length of current tour
-} Ant;
-
 
 
 void initializeAnts(Ant *ants);
@@ -56,7 +30,7 @@ int main() {
     char city_amount[sizeof(N_CITIES)] = "";
     sprintf(city_amount, "%d", N_CITIES);
     char file_ending [] = ".csv";
-    char basepath[18 + sizeof(city_amount) + sizeof(file_ending)] = "../../cities/data/";
+    char basepath[18 + sizeof(city_amount) + sizeof(file_ending)] = "../cities/data/";
     strcat(basepath, city_amount);
     strcat(basepath, file_ending);
 
@@ -159,13 +133,7 @@ int main() {
     uint64_t end = system_current_time_millis();
     double sec = (end - start) / 1.0e3;
 
-    // check if all cities were visited
-    int visited_cities = 0;
-    for (int k = 0; k < N_CITIES; ++k) {
-        if(ants[min_index].visited[k])
-            visited_cities++;
-    }
-    printf("%d Cities\n", visited_cities);
+
     // Print the shortest tour
     printf("Shortest tour: ");
     for (i = 0; i <= N_CITIES; i++)

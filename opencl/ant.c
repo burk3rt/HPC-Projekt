@@ -7,8 +7,7 @@
 #include <sys/stat.h>
 #include <sys/timeb.h>
 
-#include "ant.h"
-#include "../cities/csv-input.c"
+#include "../cities/csv-input.h"
 #ifdef __APPLE__
 #include <OpenCL/opencl.h>
 #else
@@ -45,8 +44,7 @@ int main(int argc, char** argv)
         clGetDeviceInfo(devices[i], CL_DEVICE_NAME, sizeof(name), name, NULL);
         printf("[%d]: %s\n", i, name);
     }
-    printf("Choose device (Default %d): ", choice);
-    //scanf("%d", &choice);
+    printf("Running on device: %d)\n ", choice);
     if(choice < 0 || choice >= n_devices) {
         printf("Invalid choice, using device 0");
         choice = 0;
@@ -164,6 +162,8 @@ int main(int argc, char** argv)
         phero[i] = INIT_PHER;
     }
 
+    uint64_t start = system_current_time_millis();
+
     // Copy constant (for host) data to device
     err = clEnqueueWriteBuffer(commands, d_cities, CL_TRUE, 0, N_CITIES * sizeof(City), &cities, 0, NULL, NULL);
     if (err != CL_SUCCESS) {
@@ -171,14 +171,10 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    uint64_t start = system_current_time_millis();
-
     // Run the ant algorithm
     for (int generation = 0; generation < N_GENERATIONS; ++generation) {
         // Initialize the ants
-        printf("1Debug Host: %d\n",ants[27].path[16]);
         initializeAnts(ants);
-        printf("2Debug Host: %d\n",ants[27].path[16]);
 
         // Copy / Update data to device
         err = clEnqueueWriteBuffer(commands, d_phero, CL_TRUE, 0, N_CITIES * N_CITIES * sizeof(double), &phero, 0, NULL, NULL);
@@ -210,7 +206,6 @@ int main(int argc, char** argv)
         if (err != CL_SUCCESS) {fprintf(stderr, "Failed to read output array\n");return -1;}
 
         clFinish(commands);
-        printf("2Debug Host: %d\n",ants[27].path[16]);
 
         // Update the pheromone levels
         for (int i = 0; i < N_ANTS; i++) {
@@ -228,23 +223,22 @@ int main(int argc, char** argv)
         }
 
         //Validation
-        for (int i = 0; i < N_ANTS; i++) {
-            uint8_t resultValidation[N_CITIES];
-            memset(resultValidation, 0, N_CITIES);
-            for (int j = 0; j < N_CITIES + 1; j++) {
-                resultValidation[ants[i].path[j]] = 1;
-            }
-            for(int j = 0; j < N_CITIES; j++){
-                if(resultValidation[j] == 0) {
-                    printf("Unvalid Tour for Ant %d, did not visit City %d; First City %d\n", i, j,ants[i].path[400] );
-                }
-            }
-        }
+//        for (int i = 0; i < N_ANTS; i++) {
+//            uint8_t resultValidation[N_CITIES];
+//            memset(resultValidation, 0, N_CITIES);
+//            for (int j = 0; j < N_CITIES + 1; j++) {
+//                resultValidation[ants[i].path[j]] = 1;
+//            }
+//            for(int j = 0; j < N_CITIES; j++){
+//                if(resultValidation[j] == 0) {
+//                    printf("Unvalid Tour for Ant %d, did not visit City %d; First City %d\n", i, j,ants[i].path[400] );
+//                }
+//            }
+//        }
     }
 
     uint64_t end = system_current_time_millis();
     double sec = (end - start) / 1.0e3;
-    printf("Time needed: %8.4f seconds\n", sec);
 
     // Find the shortest tour and print
     int min_index = 0;
@@ -267,6 +261,7 @@ int main(int argc, char** argv)
         }
     }
     printf("\nTour length: %lf\n", ants[min_index].tour_length);
+    printf("Time needed for algorithm to run: %8.4f seconds\n", sec);
 
     // Time measurements
 //    cl_event prof_event;

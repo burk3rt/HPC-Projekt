@@ -24,9 +24,6 @@ double getRandom(ulong seed);
 
 __kernel void run_ant(__constant City *cities, __global Ant *ants, __global double *phero, __constant ulong *seed)
 {
-    if(get_global_id(0) == 27){
-        printf("1Debug Device: %d\n",ants[get_global_id(0)].path[16]);
-    }
     Ant ant_i = ants[get_global_id(0)];
     double probs[N_CITIES];
     for(int tour_steps = 0; tour_steps < N_CITIES; tour_steps++){
@@ -50,14 +47,14 @@ __kernel void run_ant(__constant City *cities, __global Ant *ants, __global doub
                 }
             }
             //Debug
-            if(tour_steps == N_CITIES-1 && get_global_id(0) == 0){
-                printf("Probability for city 0: %f, Denominator: %f\n", probs[0], denominator);
-                for(int i = 0; i < N_CITIES; i++){
-                    if(probs[i] != 0.0){
-                        printf(" City%d:%f", i, probs[i]);
-                    }
-                }
-            }
+//            if(tour_steps == N_CITIES-1 && get_global_id(0) == 0){
+//                printf("Probability for city 0: %f, Denominator: %f\n", probs[0], denominator);
+//                for(int i = 0; i < N_CITIES; i++){
+//                    if(probs[i] != 0.0){
+//                        printf(" City%d:%f", i, probs[i]);
+//                    }
+//                }
+//            }
 
             // Choose the next city based on the probabilities
             double r = getRandom(*seed);
@@ -79,9 +76,6 @@ __kernel void run_ant(__constant City *cities, __global Ant *ants, __global doub
     //Returning to start city
     ant_i.path[ant_i.path_index] = ant_i.start_city;
     ant_i.tour_length += clDistance(cities[ant_i.cur_city], cities[ant_i.start_city]);
-    if(get_global_id(0)==27){
-        printf("2Debug Device: %d\n",ants[get_global_id(0)].path[16]);
-    }
     ants[get_global_id(0)] = ant_i;
 }
 
