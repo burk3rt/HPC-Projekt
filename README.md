@@ -16,11 +16,12 @@
 
 ### Todo
 
-- [ ] Einlesen von Städten auf Basis von csv input (mit Python generieren?)
+- [x] Einlesen von Städten auf Basis von csv input (mit Python generieren?)
 - [x] Plain_c Lösung gegenprüfen mit OR Ant-Algorithmus
   - Abweichung von struct zu Matritzen für Speicheroptimierung
   - Struct minimieren (tour length nacher errechnen, cur city aus path )
 - [ ] Optimierung OpenCL
+  - [Beispiel Repo](https://github.com/sspeiser/hpc-uebungen/tree/main/opencl-matmul/unoptimized)
 - [ ] Optimierung OpenMP
 - [ ] Benchmark "Framework"
 ---

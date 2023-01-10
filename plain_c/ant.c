@@ -48,10 +48,10 @@ int main() {
     City cities[N_CITIES];              // Array of cities
     Ant ants[N_ANTS];                   // Array of ants
     double phero[N_CITIES][N_CITIES];   // Pheromone levels on the edges
-    double probs[N_CITIES];             // Probabilities of moving to a city     // Number of ants
+    double probs[N_CITIES];             // Probabilities of moving to a city
     int i, j;                           // Loop indices
 
-    // Read in the number of cities and ants
+    // Find the data source depending on the number of cities
     printf("number cities=%d, number ants=%d\n", N_CITIES, N_ANTS);
     char city_amount[sizeof(N_CITIES)] = "";
     sprintf(city_amount, "%d", N_CITIES);
@@ -59,9 +59,7 @@ int main() {
     char basepath[18 + sizeof(city_amount) + sizeof(file_ending)] = "../../cities/data/";
     strcat(basepath, city_amount);
     strcat(basepath, file_ending);
-    //printf("%s", basepath);
 
-    int data[N_CITIES][2];
     readCitiesFromCsv(basepath, cities);
 
     // Initialize the pheromone levels to the initial value
