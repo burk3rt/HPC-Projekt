@@ -44,10 +44,21 @@ __kernel void run_ant(__constant City *cities, __global Ant *ants, __global doub
                 if (j != ant_i.cur_city && !ant_i.visited[j]) { // Cannot move to current city OR already visited city
                     probs[j] = pow(phero[ant_i.cur_city * N_CITIES + j], ALPHA) *
                                pow(1.0 / clDistance(cities[ant_i.cur_city], cities[j]), BETA) / denominator;
+                    //if(probs[j] < 0.00001) probs[j] = 0;
                 } else {
                     probs[j] = 0.0; // Cannot move to the current city
                 }
             }
+            //Debug
+            if(tour_steps == N_CITIES-1 && get_global_id(0) == 0){
+                printf("Probability for city 0: %f, Denominator: %f\n", probs[0], denominator);
+                for(int i = 0; i < N_CITIES; i++){
+                    if(probs[i] != 0.0){
+                        printf(" City%d:%f", i, probs[i]);
+                    }
+                }
+            }
+
             // Choose the next city based on the probabilities
             double r = getRandom(*seed);
             double total = 0.0;

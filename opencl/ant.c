@@ -214,22 +214,10 @@ int main(int argc, char** argv)
 
         // Update the pheromone levels
         for (int i = 0; i < N_ANTS; i++) {
-            uint8_t resultValidation[N_CITIES];
-            memset(resultValidation, 0, N_CITIES);
             for (int j = 1; j < N_CITIES; j++) {
-                //Validate Tours
-                resultValidation[j] = 1;
-
                 phero[ants[i].path[j - 1] * N_CITIES + ants[i].path[j]] += QVAL / ants[i].tour_length;
             }
             phero[ants[i].path[N_CITIES - 1] * N_CITIES + ants[i].path[0]] += QVAL / ants[i].tour_length; // Return to starting city
-
-            for(int j = 0; j < N_CITIES; j++){
-                if(resultValidation[j] == 0) {
-                    printf("Unvalid Tour for Ant %d, did not visit City %d\n", i, j);
-
-                }
-            }
         }
 
         // Evaporate pheromones
@@ -238,16 +226,47 @@ int main(int argc, char** argv)
                 phero[i * N_CITIES + j] *= (1.0 - RHO);
             }
         }
+
+        //Validation
+        for (int i = 0; i < N_ANTS; i++) {
+            uint8_t resultValidation[N_CITIES];
+            memset(resultValidation, 0, N_CITIES);
+            for (int j = 0; j < N_CITIES + 1; j++) {
+                resultValidation[ants[i].path[j]] = 1;
+            }
+            for(int j = 0; j < N_CITIES; j++){
+                if(resultValidation[j] == 0) {
+                    printf("Unvalid Tour for Ant %d, did not visit City %d; First City %d\n", i, j,ants[i].path[400] );
+                }
+            }
+        }
     }
 
     uint64_t end = system_current_time_millis();
     double sec = (end - start) / 1.0e3;
     printf("Time needed: %8.4f seconds\n", sec);
 
-    return 0;
-
-
-
+    // Find the shortest tour and print
+    int min_index = 0;
+    double min_length = ants[0].tour_length;
+    for (int i = 0; i < N_ANTS; i++)
+    {
+        if (ants[i].tour_length < min_length)
+        {
+            min_length = ants[i].tour_length;
+            min_index = i;
+        }
+    }
+    printf("Shortest tour: ");
+    for (int i = 0; i <= N_CITIES; i++)
+    {
+        printf("%d ", ants[min_index].path[i]);
+        if(i == 4){
+            i = N_CITIES - 5;
+            printf(" ... ");
+        }
+    }
+    printf("\nTour length: %lf\n", ants[min_index].tour_length);
 
     // Time measurements
 //    cl_event prof_event;

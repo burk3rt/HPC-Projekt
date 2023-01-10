@@ -16,3 +16,4 @@
 - Parameter, welche sich auf den Algorithmus beziehen nicht mit kompilieren, sodass die Lösung programmgesteuert verschieden Werte ausprobieren kann.
 - (Beste) Tour einer Generation zwischenspeichern
 - Wenn möglich Ant immer auf gleichem Work Item schedulen um Ant synchro zu vernachlässigen
+- Structs kleiner machen uint8

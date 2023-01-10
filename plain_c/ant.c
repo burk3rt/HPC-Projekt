@@ -146,7 +146,7 @@ int main() {
     // Find the shortest tour
     int min_index = 0;
     double min_length = ants[0].tour_length;
-    for (i = 1; i < N_ANTS; i++)
+    for (i = 0; i < N_ANTS; i++)
     {
         if (ants[i].tour_length < min_length)
         {

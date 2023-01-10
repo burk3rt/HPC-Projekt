@@ -1,7 +1,7 @@
 // Ant config
 #define N_CITIES 400                    //  number of cities
 #define N_ANTS 32                      //  number of ants
-#define N_GENERATIONS 1
+#define N_GENERATIONS 10
 #define ALPHA 1.0                    // Pheromone influence
 #define BETA 5.0                     // Distance influence
 #define RHO 0.5                      // Pheromone evaporation coefficient
