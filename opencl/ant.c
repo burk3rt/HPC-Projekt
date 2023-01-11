@@ -145,7 +145,8 @@ int main(int argc, char** argv)
     err  = clSetKernelArg(run_ant, 0, sizeof(cl_mem), &d_cities);
     err |= clSetKernelArg(run_ant, 1, sizeof(cl_mem), &d_ants);
     err |= clSetKernelArg(run_ant, 2, sizeof(cl_mem), &d_phero);
-    err |= clSetKernelArg(run_ant, 3, sizeof(cl_mem), &d_seed);
+    err |= clSetKernelArg(run_ant, 3, sizeof(phero), NULL);
+    err |= clSetKernelArg(run_ant, 4, sizeof(cl_mem), &d_seed);
     if (err != CL_SUCCESS){
         fprintf(stderr, "Failed to set kernel arguments!\n");
         return -1;

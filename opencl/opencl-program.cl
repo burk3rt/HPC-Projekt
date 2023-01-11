@@ -22,10 +22,14 @@ typedef struct
 double clDistance(City city1, City city2);
 double getRandom(ulong seed);
 
-__kernel void run_ant(__constant City *cities, __global Ant *ants, __global double *phero, __constant ulong *seed)
+__kernel void run_ant(__constant City *cities, __global Ant *ants, __global double *g_phero, __local double *phero, __constant ulong *seed)
 {
     Ant ant_i = ants[get_global_id(0)];
     double probs[N_CITIES];
+    event_t event;
+    event = async_work_group_copy(phero, g_phero, N_CITIES * N_CITIES * sizeof(double), 0);
+    wait_group_events(1, &event);
+
     for(int tour_steps = 0; tour_steps < N_CITIES; tour_steps++){
         if(ant_i.path_index < N_CITIES){ // If the ant has not visited all the cities
             //Calculate denominator to distribute possibility between 0 and 1
