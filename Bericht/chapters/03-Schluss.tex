@@ -1,2 +1,9 @@
 \section{Fazit}
-Erkentnisse, Fazit, nächste Schritte (0,5 - 1 Seite)
+
+Die genauere theoretische Betrachtung, wie auch die Ergebnisse des Benchmarks zeigen deutlich, dass unser Ansatz nicht gut geeignet ist für eine Implementierung auf der GPU.
+Die CPU hat, vermutlich durch den größeren und schnelleren Cache, Vorteile bei den zufälligen Zugriffen auf die Daten.
+Auch die höhere Anzahl an Kernen konnte der GPU keinen wirklichen Vorteil verschaffen, obwohl eine hohe Anzahl an Ameisen also an Kernels eingesetzt werden.
+
+Bei einem zweiten HPC Projekt könnte man früher im Prozess ein Struktogramm ausarbeiten, bzw. mögliche Speicherzugriffe vorhersagen und somit früher erkennen, dass das Problem eher für die CPU gemacht ist.
+Trotzdem zeigt dieser Anwendungsfall deutlich, die Unterschiede zwischen den beiden Komponenten, besonders wenn man die OpenCL Lösung auf der CPU ausführt.
+

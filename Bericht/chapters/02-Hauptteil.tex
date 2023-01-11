@@ -138,6 +138,23 @@ Durch die Pheromonmatrix, die an vielen Stellen bei der Berechnung benötigt wir
 Die Zufallsentscheidungen der Ameisen sorgen ebenfalls für zufällige Zugriffe, sodass man die Pheromonmatrix auch nicht in Teilen in den Kernel laden könnte.
 Theoretisch müsste die OpenCL Lösung bei einer hohen Anzahl an Ameisen und einer geringen Anzahl an Städten einen Vorteil haben.
 
-\subsection{OpenMP}
 
 \subsection{Benchmarks}
+
+Die Benchmarks wurden auf einem MacBook Pro (16-inch, 2019) mit einem 2,3 GHz 8-Core Intel Core i9 Prozessor und einer AMD Radeon Pro 5500M 4GB durchgeführt.
+Eine Ausführung auf der Intel UHD Graphics 630 war nicht möglich, da der OpenCL Code aus unerklärlichen Gründen nicht kompiliert werden konnte.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{../images/Benchmark-results.png}
+    \caption{Struktogramm mit Speicherzugriff}
+    \label{fig:benchmark-results}
+\end{figure}
+
+Die Programme wurden jeweils mit etwas Wartezeit einmalig durchgeführt, was keine besonders gute Präzision bietet aber deutliche Trends aufzeigt.
+Die errechneten Touren bei den Durchläufen sind dabei recht ähnlich gewesen und nur bei manchen Durchläufen ausgerissen. 
+Dem könnte mit mehr Generationen an Ameisen entgegengewirkt werden. 
+Während der Tests konnte außerdem beobachtet werden, dass sowohl OpenMP wie auch OpenCL das jeweilige Device komplett auslasten.
+
+Bei der OpenCL Lösung ist ein enormer Anstieg der Durchlaufzeit zu beobachten, sobald mehr Städte involviert sind, als in den Speicher passen.
+Führ man OpenCL auf der CPU aus ist es zwar immer noch langsamer als OpenMP, jedoch wesentlich schneller als auf der Grafikkarte. 
