@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#if any statement returns a non-true return value
+set -e
+
 if [ $# -ne 1 ]; then
   echo "Error: Script requires exactly one argument (plain, openmp, opencl)"
   exit 1
@@ -20,8 +23,10 @@ elif [ $1 = "opencl" ]; then
 elif [ $1 = "all" ]; then
   ./run.sh plain
   echo "################################################"
+  sleep 1
   ./run.sh openmp
   echo "################################################"
+  sleep 1
   ./run.sh opencl
   echo "################################################"
 fi
