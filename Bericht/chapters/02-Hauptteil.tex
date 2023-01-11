@@ -77,7 +77,7 @@ Folglich müssen die Städte in derselben Dimension der Grafikkarte geladen werd
 \end{figure}
 
 Anhand des Diagramms und mit dem Ziel möglichst gleiche Speicherzugriffe zu tätigen wurde auch hier die Ameisen- und die Stadtschleife getauscht.
-Das resultiert darin, dass in jedem Kernel auf die jeweils gleiche Ameise beschrieben werden kann.
+Das resultiert darin, dass in jedem Kernel auf die jeweils gleiche Ameise geschrieben werden kann.
 Die anderen Datenfelder werden innerhalb der beiden Schleifen nur im Lesezugriff benötigt und benötigen auch keine Synchronisierung.
 Zusätzlich kann das Probability Array in den lokalen Speicher des Kernels gezogen werden.
 Eine zweidimensionale Berechnung der Städte bleibt jedoch weiterhin unvorteilhaft.
@@ -85,7 +85,7 @@ Eine zweidimensionale Berechnung der Städte bleibt jedoch weiterhin unvorteilha
 Ein weitere technische Hürde ist die mangelnde Unterstützung von OpenCL von zweidimensionalen Arrays, weswegen die Pheromonmatrix angepasst wurde.
 Die mathematischen Methoden pow und sqrt sind in OpenCL verfügbar, jedoch kann OpenCL keine pseudozufälligen Zahlen mit rand berechnen, die aber für die Wahl der nächsten Stadt benötigt wird.
 Als Ersatz wird ein Algorithmus verwendet, welcher der Implementierung von java.util.Random.nextInt() ähnelt und in den ein zufälliger Seed einfliest.
-Dieser Seed wird auf dem Host für jede Ant in jeder Generation neu berechnet und an die GPU übergeben.
+Dieser Seed wird auf dem Host für jede Generation neu berechnet und an die GPU übergeben.
 
 Auf dem Host wurde neben dem Programmcode für OpenCL, also Vorbereitung, Speicherbefüllung / Lese und der Ausführung des Kernels noch Statements für das Benchmarking hinzugefügt.
 
@@ -99,11 +99,20 @@ Betrachtet man die Grafik \ref{fig:struktogramm-speicher} wird klar, dass die Ph
 Zudem sind hier die Zugriffe zufällig, da sie darauf basieren, in welcher Stadt sich die Ameise aktuell befindet, was zu einigen Cache Misses führen dürfte.
 
 Die Benchmarks zeigen, dass das Ausführen des Kernels im Vergleich zu dem Lesen und Schreiben der Buffer den Großteil der Zeit in Anspruch nimmt.
-Führt man den Kernel auf der CPU aus, wird die Lösung wesentlich besser und damit näher an die OpenMP Lösung heran.
+Führt man den Kernel auf der CPU aus, wird die Lösung wesentlich besser und nähert sich damit an die OpenMP Lösung an.
 Dieser Fakt passt zu der Theorie, dass die Speichergeschwindigkeit das Problem ist.
 Eine versuchte Gegenmaßnahme kann in der Branch failed_opt-use_local_phero gefunden werden, in der die Pheromonmatrix zu Beginn in den lokalen Speicher geladen wird.
 Dieser Ansatz hat die Durchlaufzeit nicht verbessern können.
 Vermutlich da das Übertragen ebenso Zeit benötigt und man durch den begrenzten lokalen Speicher nur noch ca. 50 Städte verwenden kann.
-Dem könnte man entgegen wirken, indem die Pheromonmatrix auf float
+Dem könnte man entgegen wirken, indem die Pheromonmatrix auf float reduziert wird, was jedoch die Genauigkeit des Algorithmus verringert und so an der Vergleichbarkeit gekratzt.
 
-- Kritik Zufallsgenerator
+Als zweiter großer Kritikpunkt ist die Generierung der Zufallszahlen zu erwähnen. 
+Die generierten Zahlen wirkten bei der Entwicklung gar nicht so zufällig und die Mechanik für die Veränderung der Ganzzahl in eine Kommazahl zwischen 0 und 1 ist nicht so effizient wie in der Implementierung ohne OpenCL.
+
+Durch die Pheromonmatrix, die an vielen Stellen bei der Berechnung benötigt wird, ist unser Algorithmus vermutlich grundsätzlich nicht gut für die GPU geignet.
+Die Zufallsentscheidungen der Ameisen sorgen ebenfalls für zufällige Zugriffe, sodass man die Pheromonmatrix auch nicht in Teilen in den Kernel laden könnte.
+Theoretisch müsste die OpenCL Lösung bei einer hohen Anzahl an Ameisen und einer geringen Anzahl an Städten einen Vorteil haben.
+
+\subsection{OpenMP}
+
+\subsection{Benchmarks}
