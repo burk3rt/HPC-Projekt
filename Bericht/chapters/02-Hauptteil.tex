@@ -16,19 +16,20 @@ Zur weiteren Optimierung der Tour werden nacheinander mehrere Generationen von S
 Jede Generation bekommt die Wahrscheinlichkeiten der Pfade der vorherigen Generation und baut darauf auf.
 Auf diese Weise kann der Algorithmus schrittweise die optimale Tour durch die Städte bestimmen.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=16cm]{../images/struktog.png}
     \caption{Algorithmus Struktogramm}
     \label{fig:struktogramm}
 \end{figure}
 
-\section{Implementierung inklusive Schwierigkeiten}
-1 - 2 Seiten\\
-\subsection*{C Implementierung}
+\section{Implementierung}
+Es wurden drei Varianten, eine ohne Framework, eine mit OpenMP und eine mit OpenCL, programmiert.
+Der Quellcode dazu ist auf \href{https://github.com/burk3rt/HPC-Projekt}{Github} zu finden.
+\subsection{C Implementierung}
 
 Damit die Verfahren vergleichbar sind, brauchen wir immer gleiche Ausgangsdaten und können diese daher nicht generieren, sondern laden diese über CSV Dateien.
-Dabei besteht jede Stadt aus zwei Koordinaten, die in den Dateien gehalten werden.
+Dabei besteht jede Stadt aus zwei Koordinaten, die in den Dateien gespeichert sind.
 Die Distanz, zur Vereinfachung die Luftlinie, zwischen zwei Städten wird mittels der Koordinaten berechnet.
 \\\\
 Alle Daten zur Berechnung des Pfades sind in einem Ameisen-Struct enthalten.
@@ -51,20 +52,14 @@ Zur Bewertung des Ergebnisses haben wir folgendes \href{https://poolik.github.io
     \caption{\label{demo-table}Pfadlängenvalidierung}
 \end{table}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=16cm]{../images/struktog-optimiert.png}
-    \caption{Algorithmus Struktogramm Optimiert}
-    \label{fig:struktogramm-optimiert}
-\end{figure}
 
-\subsection*{Anpassung für OpenMP}
+\subsection{Anpassung für OpenMP}
 
 Es lohnt sich generell, mit OpenMP zu optimieren, wenn ein Programm eine hohe Parallelisierbarkeit aufweist, d.h. wenn es große Bereiche gibt, 
 die sich gut parallel ausführen lassen und damit eine signifikante Leistungssteigerung erreicht werden kann.
 Dabei ist zu beachten, dass nicht jeder Code für die Optimierung mit OpenMP geeignet ist. Speziell bei Schleifen mit geringen Iterationen und einfachen Berechnungen kann der Overhead von OpenMP die gewonnene Optimierung ausgleichen.
 \\\\
-Der ACO Algorithmus beinhaltet eine geschachtelte Schleife über Ameisen und Citys, in der die Berechnung der Touren stattfindet.
+Der ACO Algorithmus beinhaltet eine geschachtelte Schleife über Ameisen und Städte, in der die Berechnung der Touren stattfindet.
 Innerhalb der Schleife bilden die Ameisen unabhängig voneinander ihren Pfad und müssen nicht miteinander synchronisiert werden.
 Erst wenn die Generation der Ameisen durchgelaufen ist, wird die gemeinsame Pheromonmatrix aktualisiert.
 Zur Pfadberstellung wird eine Wahrscheinlichkeitstabelle berechnet, welche die Wahrschienlichkeiten von der aktuellen zu jeder noch unbesuchten Stadt enthält.
@@ -81,7 +76,7 @@ Das bedeutet, dass jeder Thread eine Kopie des Index hat und die Schleife parall
 Jeder Thread vergleicht die eigene Länge der Tour mit der aktuell kürzesten Tour. 
 Am Ende wird nur der Index der wirklich kürzesten Tour übernommen und die anderen Kopien des Index werden verworfen.
 
-\subsection*{Anpassungen für OpenCL}
+\subsection{Anpassungen für OpenCL}
 
 Unser Algorithmus verwendet drei ineinander geschachtelte Schleifen, welche in die drei möglichen Dimensionen der Grafikkarte geladen werden könnten.
 Um den Zugriff auf die besagten Datenfelder zu verstehen, wurde in dem Struktogramm zu jedem Schritt der Lese- (R) oder Schreibzugriff (W) notiert.
@@ -92,7 +87,7 @@ Folglich müssen die Städte in derselben Dimension der Grafikkarte geladen werd
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\textwidth]{../images/Speicherzugriff.png}
+    \includegraphics[width=\textwidth]{../images/Speicherzugriff-optimiert.png}
     \caption{Struktogramm mit Speicherzugriff}
     \label{fig:struktogramm-speicher}
 \end{figure}
@@ -111,7 +106,6 @@ Dieser Seed wird auf dem Host für jede Generation neu berechnet und an die GPU 
 Auf dem Host wurde neben dem Programmcode für OpenCL, also Vorbereitung, Speicherbefüllung / Lese und der Ausführung des Kernels noch Statements für das Benchmarking hinzugefügt.
 
 \section{Bewertung}
-Bewertung des Ansatzes und der performance-limitierenden Faktoren (1-2 Seiten)
 
 \subsection{OpenMP}
 Aufgrund der geschachtelten Schleife mit vielen Iterationen und wenig Synchronisierungen ist der Algorithmus optimal für OpenMP.
@@ -147,7 +141,7 @@ Eine Ausführung auf der Intel UHD Graphics 630 war nicht möglich, da der OpenC
 \begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{../images/Benchmark-results.png}
-    \caption{Struktogramm mit Speicherzugriff}
+    \caption{Ergebnisse des Benchmarks}
     \label{fig:benchmark-results}
 \end{figure}
 
