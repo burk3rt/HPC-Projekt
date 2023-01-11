@@ -1,11 +1,11 @@
-#include "../plain_c/ant.h"
 #include <stdio.h>
-#include <stdlib.h>
+#include "csv-input.h"
 
 int readCitiesFromCsv(char *filename, City *cities) {
     FILE *fp;
     int i, j;
 
+    printf("Reading File: %s\n", filename);
     fp = fopen(filename, "r");
     if (fp == NULL) {
         printf("Error opening file\n");

@@ -23,4 +23,4 @@
 06.1.; 2.5h: OpenCL lauffähig gemacht, Theorie von 2 workdim verworfen, Versucht config in kernel verfügbar zu machen (aufgegeben), Versuch 2d array in kernel zu verwenden  
 08.1.; 1.5h: Weiter mit 2D Array versucht (Image Object) und verworfen und 1D Array daraus gemacht.  
 09.1.; 7.5: Random Generator implementiert (Erst mit xorshift, nun in der Java Ausführung), Debugging weil Zurückschreiben vergessen und Fehler beim Übertragen des Algorithmus, kleine Optimierung in Bezug auf Buffer-Writes  
-10.1.; 
+10.1.; 3h: Vereinheitlichen der Programme, Debug Statements entfernt, Parameter in eine Header-Datei gezogen, OpenMP lauffähig auf Mac, Bash Skript zum starten aller Teilprojekte
