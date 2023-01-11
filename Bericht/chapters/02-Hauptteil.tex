@@ -27,6 +27,19 @@ Auf diese Weise kann der Algorithmus schrittweise die optimale Tour durch die St
 1 - 2 Seiten\\
 \subsection*{C Implementierung}
 
+Damit die Verfahren vergleichbar sind, brauchen wir immer gleiche Ausgangsdaten und können diese daher nicht generieren, sondern laden diese über CSV Dateien.
+Dabei besteht jede Stadt aus zwei Koordinaten, die in den Dateien gehalten werden.
+Die Distanz, zur Vereinfachung die Luftlinie, zwischen zwei Städten wird mittels der Koordinaten berechnet.
+\\\\
+Alle Daten zur Berechnung des Pfades sind in einem Ameisen-Struct enthalten.
+Dies umfasst unter anderem den Pfad der Ameise, welche Städte sie besucht hat und die Länge der Tour.
+Jene Daten werden bei jeder Generation zurückgesetzt.
+Im Gegensatz dazu wird die Pheromonmatrix nicht zurückgesetzt und lässt somit die Ergebnisse der vorherigen Generationen mit einfließen.
+Nach jedem Durchlauf wird die Pheromonmatrix abhängig von den berechneten Tourlängen angepasst und eine natürliche Verdunstung durchgeführt.
+\\\\
+Abschließend wird aus der letzten Generation die beste Tour gefunden und ausgegeben.
+\\\\
+Zur Bewertung des Ergebnisses haben wir folgendes \href{https://poolik.github.io/visual-aco/}{ACO-Onlinetool} verwendet. 
 \begin{table}[h]
     \centering
     \begin{tabular}{|l|l|}
@@ -37,9 +50,7 @@ Auf diese Weise kann der Algorithmus schrittweise die optimale Tour durch die St
     \end{tabular}
     \caption{\label{demo-table}Pfadlängenvalidierung}
 \end{table}
-\subsection*{Generelle Anpassungen}
 
-Optimierung des Algorithmus durch Vertauschen der Geschachtelten Ants-Cities for-Schleife.
 \begin{figure}[H]
     \centering
     \includegraphics[width=16cm]{../images/struktog-optimiert.png}
