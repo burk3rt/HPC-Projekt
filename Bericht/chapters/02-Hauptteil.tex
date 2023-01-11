@@ -44,9 +44,9 @@ Zur Bewertung des Ergebnisses haben wir folgendes \href{https://poolik.github.io
     \centering
     \begin{tabular}{|l|l|}
     \hline
-                    & Pfadlänge    \\ \hline
-    Online ACO Tool & $\sim$13.000 \\ \hline
-    Plain C         & $\sim$13.500 \\ \hline
+                    & Pfadlänge bei 400 Städten     \\ \hline
+    Online ACO Tool & $\sim$13.000                  \\ \hline
+    Plain C         & $\sim$13.500                  \\ \hline
     \end{tabular}
     \caption{\label{demo-table}Pfadlängenvalidierung}
 \end{table}
@@ -58,7 +58,28 @@ Zur Bewertung des Ergebnisses haben wir folgendes \href{https://poolik.github.io
     \label{fig:struktogramm-optimiert}
 \end{figure}
 
-\subsection*{OpenMP Optimierung}
+\subsection*{Anpassung für OpenMP}
+
+Es lohnt sich generell, mit OpenMP zu optimieren, wenn ein Programm eine hohe Parallelisierbarkeit aufweist, d.h. wenn es große Bereiche gibt, 
+die sich gut parallel ausführen lassen und damit eine signifikante Leistungssteigerung erreicht werden kann.
+Dabei ist zu beachten, dass nicht jeder Code für die Optimierung mit OpenMP geeignet ist. Speziell bei Schleifen mit geringen Iterationen und einfachen Berechnungen kann der Overhead von OpenMP die gewonnene Optimierung ausgleichen.
+\\\\
+Der ACO Algorithmus beinhaltet eine geschachtelte Schleife über Ameisen und Citys, in der die Berechnung der Touren stattfindet.
+Innerhalb der Schleife bilden die Ameisen unabhängig voneinander ihren Pfad und müssen nicht miteinander synchronisiert werden.
+Erst wenn die Generation der Ameisen durchgelaufen ist, wird die gemeinsame Pheromonmatrix aktualisiert.
+Zur Pfadberstellung wird eine Wahrscheinlichkeitstabelle berechnet, welche die Wahrschienlichkeiten von der aktuellen zu jeder noch unbesuchten Stadt enthält.
+Diese wird den Threads als private Variable mitgegeben, damit die Berechnungen unabhängig voneinander stattfinden können.
+Somit eignet sich die innere geschachtelte Schleife aus Ameisen und Städten gut für die Optimierung mittels OpenMP.
+\\\\
+Weitere Schleifen welche mit OpenMP optimiert werden können sind die Aktualisierung und Verdunstung der Pheromonmatrix.
+Trotz kleinem Rechenaufwand weißen sie eine hohe Anzahl an Iterationen und parallel durchführbaren Rechenschritten auf.
+\\\\
+Nach der letzten Ameisengeneration wird die kürzeste Tour festgestellt.
+Dies geschieht innerhalb einer Schleife, die sowohl die Ameisen als auch die Städte durchläuft und dabei einen Index festlegt, der die kürzeste Tour angibt. 
+Dieser Vorgang wird parallel durchgeführt, indem der Index als "Reduktion" mitzugeben wird. 
+Das bedeutet, dass jeder Thread eine Kopie des Index hat und die Schleife parallel ausgeführt wird. 
+Jeder Thread vergleicht die eigene Länge der Tour mit der aktuell kürzesten Tour. 
+Am Ende wird nur der Index der wirklich kürzesten Tour übernommen und die anderen Kopien des Index werden verworfen.
 
 \subsection*{Anpassungen für OpenCL}
 
@@ -92,6 +113,10 @@ Auf dem Host wurde neben dem Programmcode für OpenCL, also Vorbereitung, Speich
 \section{Bewertung}
 Bewertung des Ansatzes und der performance-limitierenden Faktoren (1-2 Seiten)
 
+\subsection{OpenMP}
+Aufgrund der geschachtelten Schleife mit vielen Iterationen und wenig Synchronisierungen ist der Algorithmus optimal für OpenMP.
+Außerdem ist der Speicher nicht so limitiert wie bei der GPU, was OpenMP einen deutlichen Vorteil verschafft.
+
 \subsection{OpenCL}
 Das größte Problem im Vergleich zur CPU ist die Menge des verfügbaren Speichers.
 Dieser entspricht auf unserem Testgerät 65KB pro Workitem und global maximal 4GB.
@@ -101,7 +126,7 @@ Zudem sind hier die Zugriffe zufällig, da sie darauf basieren, in welcher Stadt
 Die Benchmarks zeigen, dass das Ausführen des Kernels im Vergleich zu dem Lesen und Schreiben der Buffer den Großteil der Zeit in Anspruch nimmt.
 Führt man den Kernel auf der CPU aus, wird die Lösung wesentlich besser und nähert sich damit an die OpenMP Lösung an.
 Dieser Fakt passt zu der Theorie, dass die Speichergeschwindigkeit das Problem ist.
-Eine versuchte Gegenmaßnahme kann in der Branch failed_opt-use_local_phero gefunden werden, in der die Pheromonmatrix zu Beginn in den lokalen Speicher geladen wird.
+Eine versuchte Gegenmaßnahme kann in der Branch failed\_opt - use\_local\_phero gefunden werden, in der die Pheromonmatrix zu Beginn in den lokalen Speicher geladen wird.
 Dieser Ansatz hat die Durchlaufzeit nicht verbessern können.
 Vermutlich da das Übertragen ebenso Zeit benötigt und man durch den begrenzten lokalen Speicher nur noch ca. 50 Städte verwenden kann.
 Dem könnte man entgegen wirken, indem die Pheromonmatrix auf float reduziert wird, was jedoch die Genauigkeit des Algorithmus verringert und so an der Vergleichbarkeit gekratzt.
