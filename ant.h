@@ -1,4 +1,4 @@
-#define N_CITIES 400                    //  number of cities
+#define N_CITIES 25                    //  number of cities
 #define N_ANTS 128                      //  number of ants
 #define N_GENERATIONS 10
 #define ALPHA 1.0                    // Pheromone influence
@@ -8,11 +8,11 @@
 #define INIT_PHER (1.0 / N_CITIES) // Initial pheromone level
 
 // OpenCL config
-#define N (1024*1024*64)
 #define CL_PROGRAM_FILE "opencl-program.cl"
 #define MAX_PLATFORMS 10
 #define MAX_DEVICES 10
 #define MAX_NAME_LENGTH 128
+#define DEVICE_NR 2
 
 // Structure to represent an ant
 typedef struct

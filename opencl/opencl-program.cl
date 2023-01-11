@@ -1,4 +1,4 @@
-#define N_CITIES 400
+#define N_CITIES 25
 #define ALPHA 1.0                    // Pheromone influence
 #define BETA 5.0                    // Distance influence
 
