@@ -16,7 +16,7 @@ Zur weiteren Optimierung der Tour werden nacheinander mehrere Generationen von S
 Jede Generation bekommt die Wahrscheinlichkeiten der Pfade der vorherigen Generation und baut darauf auf.
 Auf diese Weise kann der Algorithmus schrittweise die optimale Tour durch die Städte bestimmen.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \includegraphics[width=16cm]{../images/struktog.png}
     \caption{Algorithmus Struktogramm}
@@ -60,7 +60,40 @@ Zur Bewertung des Ergebnisses haben wir folgendes \href{https://poolik.github.io
 
 \subsection*{OpenMP Optimierung}
 
-\subsection*{OpenCL Optimierung}
+\subsection*{Anpassungen für OpenCL}
+
+Unser Algorithmus verwendet drei ineinander geschachtelte Schleifen, welche in die drei möglichen Dimensionen der Grafikkarte geladen werden könnten.
+Um den Zugriff auf die besagten Datenfelder zu verstehen, wurde in dem Struktogramm zu jedem Schritt der Lese- (R) oder Schreibzugriff (W) notiert. 
+Die Grundlage für die Implementierung ist jedoch, dass passende Synchronisieren der Kernels, um die Richtigkeit des Algorithmus zu garantieren.
+Die Anpassung der Pheromonematrix nach jeder Generation ist so ein Fall, wodurch eine Parallelisierung der Generationen nicht möglich ist. 
+Ebenso setzt der Algorithmus vorraus, dass erst die nächste Stadt berechnet werden kann, wenn die vorherige gefunden wurde. 
+Folglich müssen die Städte in derselben Dimension der Grafikkarte geladen werden, um die Abhängigkeit zu gewährleisten.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{../images/Speicherzugriff.png}
+    \caption{Struktogramm mit Speicherzugriff}
+    \label{fig:struktogramm-speicher}
+\end{figure}
+
+Anhand des Diagramms und mit dem Ziel möglichst gleiche Speicherzugriffe zu tätigen wurde auch hier die Ameisen- und die Stadtschleife getauscht. 
+Das resultiert darin, dass in jedem Kernel auf die jeweils gleiche Ameise beschrieben werden kann.
+Die anderen Datenfelder werden innerhalb der beiden Schleifen nur im Lesezugriff benötigt und benötigen auch keine Synchronisierung.
+Zusätzlich kann das Probability Array in den lokalen Speicher des Kernels gezogen werden. 
+Eine zweidimensionale Berechnung der Städte bleibt jedoch weiterhin verwehrt.
+
+Ein weitere technische Hürde ist die mangelnde Unterstützung von OpenCL von zweidimensionalen Arrays, weswegen die Pheromonmatrix angepasst wurde.
+Die mathematischen Methoden pow und sqrt sind in OpenCL verfügbar, jedoch kann OpenCL keine pseudozufälligen Zahlen mit rand berechnen, die aber für die Wahl der nächsten Stadt benötigt wird.
+Als Ersatz wird ein Algorithmus verwendet, welcher der Implementierung von java.util.Random.nextInt() ähnelt und in den ein zufälliger Seed einfliest.
+Dieser Seed wird auf dem Host für jede Ant in jeder Generation neu berechnet und an die GPU übergeben.
 
 \section{Bewertung}
 Bewertung des Ansatzes und der performance-limitierenden Faktoren (1-2 Seiten)
+
+\subsection{OpenCL}
+Ein weiterer limitierender Faktor im Vergleich zur C Implementierung ist die Menge des verfügbaren Speichers.
+Dieser entspricht auf unserem Testgerät 65KB pro Workitem und global maximal 4GB.
+Betrachtet man die Grafik \ref{fig:struktogramm-speicher} wird klar, dass die Pheromonmatrix schon bei 400 Städten nicht mehr in den lokalen Speicher passt.
+Zudem sind hier die Zugriffe zufällig, da sie darauf basieren, in welcher Stadt sich die Ameise aktuell befindet, was zu einigen Cache Misses führen dürfte.
+
+- Kritik Zufallsgenerator
