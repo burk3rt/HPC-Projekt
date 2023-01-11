@@ -66,8 +66,8 @@ Zur Pfadberstellung wird eine Wahrscheinlichkeitstabelle berechnet, welche die W
 Diese wird den Threads als private Variable mitgegeben, damit die Berechnungen unabhängig voneinander stattfinden können.
 Somit eignet sich die innere geschachtelte Schleife aus Ameisen und Städten gut für die Optimierung mittels OpenMP.
 \\\\
-Weitere Schleifen welche mit OpenMP optimiert werden können sind die Aktualisierung und Verdunstung der Pheromonmatrix.
-Trotz kleinem Rechenaufwand weißen sie eine hohe Anzahl an Iterationen und parallel durchführbaren Rechenschritten auf.
+Weitere Schleifen, welche mit OpenMP optimiert werden, können sind die Aktualisierung und Verdunstung der Pheromonmatrix.
+Trotz kleinem Rechenaufwand weisen sie eine hohe Anzahl an Iterationen und parallel durchführbaren Rechenschritten auf.
 \\\\
 Nach der letzten Ameisengeneration wird die kürzeste Tour festgestellt.
 Dies geschieht innerhalb einer Schleife, die sowohl die Ameisen als auch die Städte durchläuft und dabei einen Index festlegt, der die kürzeste Tour angibt. 
