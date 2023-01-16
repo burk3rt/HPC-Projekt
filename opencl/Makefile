@@ -1,6 +1,6 @@
 # MacOS
 macos:
-	clang -framework OpenCL -o tsp-ant.out ant.c
+	clang -O3 -framework OpenCL -o tsp-ant.out ../cities/csv-input.c ant.c
 
 # Windows
 all:

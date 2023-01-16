@@ -1,5 +1,3 @@
-#include "ant.h"
-#include "../cities/5/cities5.h"
 #include "../cities/csv-input.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,30 +6,6 @@
 #include <sys/timeb.h>
 #include <stdint.h>
 #include <omp.h>
-
-
-#define N_CITIES 400                    //  number of cities
-#define N_ANTS 128                      //  number of ants
-#define N_GENERATIONS 10
-#define ALPHA 1.0                    // Pheromone influence
-#define BETA 5.0                     // Distance influence
-#define RHO 0.5                      // Pheromone evaporation coefficient
-#define QVAL 100                     // Pheromone deposit coefficient
-#define INIT_PHER (1.0 / N_CITIES) // Initial pheromone level
-
-
-// Structure to represent an ant
-typedef struct
-{
-    int cur_city;         // Current city
-    int next_city;        // Next city to visit
-    int start_city;       // Start city
-    int path_index;       // Index in the path array
-    int path[N_CITIES+1];     // Visited cities in order
-    int visited[N_CITIES+1]; // Array to keep track of visited cities
-    double tour_length;   // Length of current tour
-} Ant;
-
 
 
 void initializeAnts(Ant *ants);
@@ -52,7 +26,6 @@ int main() {
     double probs[N_CITIES];             // Probabilities of moving to a city     // Number of ants
 
     // Read in the number of cities and ants
-    printf("OPEN_MP\n");
     printf("number cities=%d, number ants=%d\n", N_CITIES, N_ANTS);
     char city_amount[sizeof(N_CITIES)] = "";
     sprintf(city_amount, "%d", N_CITIES);

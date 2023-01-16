@@ -11,7 +11,9 @@
   - Java Variante produziert ziemlich gleiche Ergebnisse
 - Speicherzugriffe
   - Anhand von Bild erklären, was wie verschoben wurde (Loops getauscht, Write Buffer, Return ant to home)
-- Resultvalidation (sind alle Städte besucht worden?)
+- Result validation (sind alle Städte besucht worden?)
+
+
 # Offene Optimierung
 - Parameter, welche sich auf den Algorithmus beziehen nicht mit kompilieren, sodass die Lösung programmgesteuert verschieden Werte ausprobieren kann.
 - (Beste) Tour einer Generation zwischenspeichern
